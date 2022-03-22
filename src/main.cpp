@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 #include "main.hpp"
-#define BLUETOOTH false // Set to true in case bluetooth is desired
+#define BLUETOOTH true // Set to true in case bluetooth is desired
 
 // device id, automatically filled by concatenating the last three fields of the wifi mac address, removing the ":" in betweeen, in HEX format. Example: ChipId (HEX) = 85e646, ChipId (DEC) = 8775238, macaddress = E0:98:06:85:E6:46
 String sw_version = "v0.1";
@@ -73,19 +73,19 @@ unsigned long errors_loop_start;                  // holds a timestamp for each 
 #include <Wire.h>
 
 // Display and fonts
-#include <TFT_eSPI.h>
-#include <SPI.h>
+//#include <TFT_eSPI.h>
+//#include <SPI.h>
 //#include "SensirionSimple25pt7b.h"
-#include "ArchivoNarrow_Regular10pt7b.h"
-#include "ArchivoNarrow_Regular50pt7b.h"
+//#include "ArchivoNarrow_Regular10pt7b.h"
+//#include "ArchivoNarrow_Regular50pt7b.h"
 #define GFXFF 1
 //#define FF99  &SensirionSimple25pt7b
 #define FF90  &ArchivoNarrow_Regular10pt7b
 #define FF95  &ArchivoNarrow_Regular50pt7b
-TFT_eSPI tft = TFT_eSPI(135, 240); // Invoke library, pins defined in User_Setup.h
+//TFT_eSPI tft = TFT_eSPI(135, 240); // Invoke library, pins defined in User_Setup.h
 
 // Customized Anaire splash screen
-#include "anaire_ttgo_splash.h"
+//#include "anaire_ttgo_splash.h"
 
 // Buttons: Top and bottom considered when USB connector is positioned on the right of the board
 #include "Button2.h"
@@ -126,7 +126,7 @@ unsigned long SCD30_CALIBRATION_TIME = 10000; // SCD30 CO2 CALIBRATION TIME: 1 m
 // WiFi
 //#include <WiFi.h>
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
-#include "esp_wpa2.h" //wpa2 library for connections to Enterprise networks
+//#include "esp_wpa2.h" //wpa2 library for connections to Enterprise networks
 const int WIFI_CONNECT_TIMEOUT = 10000;           // 10 seconds
 WiFiServer wifi_server(80);                       
 WiFiClient wifi_client;
@@ -144,8 +144,8 @@ String MQTT_receive_topic;
 StaticJsonDocument<384> jsonBuffer;
 
 // OTA Update
-#include <HTTPClient.h>
-#include <HTTPUpdate.h>
+//#include <HTTPClient.h>
+//#include <HTTPUpdate.h>
 
 // to know when there is an updating process in place
 bool updating = false;
@@ -220,13 +220,13 @@ void setup() {
   errors_loop_start = millis();
 
   Serial.println("### ANAIRE PiCO2 DEVICE SETUP FINISHED ###\n");
-  tft.fillScreen(TFT_BLUE);
-  tft.setTextColor(TFT_WHITE, TFT_BLUE);
-  tft.setTextDatum(6); // bottom left
-  tft.setTextSize(1);
-  tft.setFreeFont(FF90);
-  tft.setTextDatum(MC_DATUM);
-  tft.drawString("ANAIRE PiCO2", tft.width()/2, tft.height()/2);
+  //   tft.fillScreen(TFT_BLUE);
+  //   tft.setTextColor(TFT_WHITE, TFT_BLUE);
+  //   tft.setTextDatum(6); // bottom left
+  //   tft.setTextSize(1);
+  //   tft.setFreeFont(FF90);
+  //   tft.setTextDatum(MC_DATUM);
+  //   tft.drawString("ANAIRE PiCO2", //   tft.width()/2, //   tft.height()/2);
   delay(1000);
 
   // Update display with new values
@@ -474,11 +474,11 @@ void Connect_WiFi() { // Connect to WiFi
     Serial.println(eepromConfig.wifi_user);
     Serial.print("Password: ");
     Serial.println(eepromConfig.wifi_password);
-    esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user)); //provide identity
-    esp_wifi_sta_wpa2_ent_set_username((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user)); //provide username --> identity and username is same
-    esp_wifi_sta_wpa2_ent_set_password((uint8_t *)eepromConfig.wifi_password, strlen(eepromConfig.wifi_password)); //provide password
-    esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT(); //set config settings to default
-    esp_wifi_sta_wpa2_ent_enable(&config); //set config settings to enable function 
+//    esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user)); //provide identity
+//    esp_wifi_sta_wpa2_ent_set_username((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user)); //provide username --> identity and username is same
+//    esp_wifi_sta_wpa2_ent_set_password((uint8_t *)eepromConfig.wifi_password, strlen(eepromConfig.wifi_password)); //provide password
+//    esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT(); //set config settings to default
+//    esp_wifi_sta_wpa2_ent_enable(&config); //set config settings to enable function 
   }
 
   // Connect to wifi
@@ -778,13 +778,13 @@ void Start_Captive_Portal() { // Run a captive portal to configure WiFi and MQTT
 
     InCaptivePortal = true;
 
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_RED, TFT_WHITE);
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.setTextDatum(MC_DATUM);
+    //   tft.fillScreen(TFT_WHITE);
+    //   tft.setTextColor(TFT_RED, TFT_WHITE);
+    //   tft.setTextSize(1);
+    //   tft.setFreeFont(FF90);
+    //   tft.setTextDatum(MC_DATUM);
     String wifiAP = "AnaireWiFi_" + anaire_device_id;
-    tft.drawString(wifiAP, tft.width()/2, tft.height()/2);
+    //   tft.drawString(wifiAP, //   tft.width()/2, //   tft.height()/2);
     wifi_server.stop();
     
     //Local intialization. Once its business is done, there is no need to keep it around
@@ -1221,11 +1221,11 @@ void Do_Calibrate_Sensor() { // Calibrate CO2 sensor
   Calibrating = true;
   
   // Update Display
-  tft.fillScreen(TFT_WHITE);
-  tft.setTextColor(TFT_RED, TFT_WHITE);
-  tft.setTextSize(1);
-  tft.setFreeFont(FF90);
-  tft.setTextDatum(MC_DATUM);
+  //   tft.fillScreen(TFT_WHITE);
+  //   tft.setTextColor(TFT_RED, TFT_WHITE);
+  //   tft.setTextSize(1);
+  //   tft.setFreeFont(FF90);
+  //   tft.setTextDatum(MC_DATUM);
     
   // if SCD30 is identified
   if (co2_sensor == scd30_sensor) {
@@ -1241,8 +1241,8 @@ void Do_Calibrate_Sensor() { // Calibrate CO2 sensor
     while ((millis() - calibrating_start) < SCD30_CALIBRATION_TIME) {
 
       // update display
-      tft.fillScreen(TFT_WHITE);
-      tft.drawString("CALIBRANDO " + String(counter), tft.width()/2, tft.height()/2);
+      //   tft.fillScreen(TFT_WHITE);
+      //   tft.drawString("CALIBRANDO " + String(counter), //   tft.width()/2, //   tft.height()/2);
       
       // if not there are not connectivity errors, receive MQTT messages, to be able to interrupt calibration process
       if ((!err_MQTT) && (!err_wifi)) {
@@ -1261,16 +1261,16 @@ void Do_Calibrate_Sensor() { // Calibrate CO2 sensor
     }
 
     // Perform forced recalibration
-    tft.fillScreen(TFT_WHITE);
+    //   tft.fillScreen(TFT_WHITE);
     if (scd30.forceRecalibrationWithReference(eepromConfig.forced_recalibration_reference)) {
       Serial.print("Performed forced calibration at ");
       Serial.print(eepromConfig.forced_recalibration_reference);
       Serial.println(" ppm");
-      tft.drawString("CALIBRACIÓN COMPLETA", tft.width()/2, tft.height()/2);
+      //   tft.drawString("CALIBRACIÓN COMPLETA", //   tft.width()/2, //   tft.height()/2);
     }
     else {
       Serial.println("Could not perform forced calibration");
-      tft.drawString("ERROR DE CALIBRACIÓN", tft.width()/2, tft.height()/2);
+      //   tft.drawString("ERROR DE CALIBRACIÓN", //   tft.width()/2, //   tft.height()/2);
     }
     
     delay(2000); // keep the message on screen
@@ -1458,28 +1458,28 @@ void Button_Init() { // Manage TTGO T-Display board buttons
   // Top button short click: show info about the device
   button_top.setClickHandler([](Button2 & b) {
     Serial.println("Top button short click");
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_RED, TFT_WHITE);
-    tft.setTextDatum(TL_DATUM); // top left
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.drawString("ID " + anaire_device_id, 10, 5);
-    tft.drawString("SW " + sw_version, 10, 21);
-    tft.drawString("SSID " + String(WiFi.SSID()), 10, 37);
-    tft.drawString("IP " + WiFi.localIP().toString(), 10, 53);
-    tft.drawString("MAC " + String(WiFi.macAddress()), 10, 69);
-    tft.drawString("RSSI " + String(WiFi.RSSI()), 10, 85);
+    //   tft.fillScreen(TFT_WHITE);
+    //   tft.setTextColor(TFT_RED, TFT_WHITE);
+    //   tft.setTextDatum(TL_DATUM); // top left
+    //   tft.setTextSize(1);
+    //   tft.setFreeFont(FF90);
+    //   tft.drawString("ID " + anaire_device_id, 10, 5);
+    //   tft.drawString("SW " + sw_version, 10, 21);
+    //   tft.drawString("SSID " + String(WiFi.SSID()), 10, 37);
+    //   tft.drawString("IP " + WiFi.localIP().toString(), 10, 53);
+    //   tft.drawString("MAC " + String(WiFi.macAddress()), 10, 69);
+    //   tft.drawString("RSSI " + String(WiFi.RSSI()), 10, 85);
     if (eepromConfig.acoustic_alarm) {
-      tft.drawString("ALARMA: SI", 10, 101);
+      //   tft.drawString("ALARMA: SI", 10, 101);
     }
     else {
-      tft.drawString("ALARMA: NO", 10, 101);
+      //   tft.drawString("ALARMA: NO", 10, 101);
     }
     if (eepromConfig.self_calibration) {
-      tft.drawString("CALIBRACION: AUTO", 10, 117);
+      //   tft.drawString("CALIBRACION: AUTO", 10, 117);
     }
     else {
-      tft.drawString("CALIBRACION: FORZADA", 10, 117);
+      //   tft.drawString("CALIBRACION: FORZADA", 10, 117);
     }
     delay(5000); // keep the info in the display for 5s
     Update_Display();
@@ -1488,18 +1488,18 @@ void Button_Init() { // Manage TTGO T-Display board buttons
   // Top button long click: toggle acoustic alarm
   button_top.setLongClickDetectedHandler([](Button2 & b) {
     Serial.println("Top button long click");
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_RED, TFT_WHITE);
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.setTextDatum(MC_DATUM);
+    //   tft.fillScreen(TFT_WHITE);
+    //   tft.setTextColor(TFT_RED, TFT_WHITE);
+    //   tft.setTextSize(1);
+    //   tft.setFreeFont(FF90);
+    //   tft.setTextDatum(MC_DATUM);
     if (eepromConfig.acoustic_alarm) {
       eepromConfig.acoustic_alarm = false;
-      tft.drawString("ALARMA: NO", tft.width()/2, tft.height()/2);
+      //   tft.drawString("ALARMA: NO", //   tft.width()/2, //   tft.height()/2);
     }
     else {
       eepromConfig.acoustic_alarm = true;
-      tft.drawString("ALARMA: SI", tft.width()/2, tft.height()/2);
+      //   tft.drawString("ALARMA: SI", //   tft.width()/2, //   tft.height()/2);
     }
     Write_EEPROM();
     delay(5000); // keep the info in the display for 5s
@@ -1521,19 +1521,19 @@ void Button_Init() { // Manage TTGO T-Display board buttons
   // Bottom button short click: show buttons info
   button_bottom.setClickHandler([](Button2 & b) {
     Serial.println("Bottom button short click");
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_BLACK, TFT_WHITE);
-    tft.setTextDatum(TL_DATUM); // top left
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.drawString("Arriba Corto: Status", 10, 5);
-    tft.drawString("  Largo: Alarma", 10, 21);
-    tft.drawString("  Doble: Dormir", 10, 37);
-    tft.drawString("  Triple: Config Portal", 10, 53);
-    tft.drawString("Abajo Corto: Info", 10, 69);
-    tft.drawString("  Largo: Calibrar", 10, 85);
-    tft.drawString("  Doble: Reiniciar", 10, 101);
-    tft.drawString("  Triple: Autocalibración", 10, 117);
+    //   tft.fillScreen(TFT_WHITE);
+    //   tft.setTextColor(TFT_BLACK, TFT_WHITE);
+    //   tft.setTextDatum(TL_DATUM); // top left
+    //   tft.setTextSize(1);
+    //   tft.setFreeFont(FF90);
+    //   tft.drawString("Arriba Corto: Status", 10, 5);
+    //   tft.drawString("  Largo: Alarma", 10, 21);
+    //   tft.drawString("  Doble: Dormir", 10, 37);
+    //   tft.drawString("  Triple: Config Portal", 10, 53);
+    //   tft.drawString("Abajo Corto: Info", 10, 69);
+    //   tft.drawString("  Largo: Calibrar", 10, 85);
+    //   tft.drawString("  Doble: Reiniciar", 10, 101);
+    //   tft.drawString("  Triple: Autocalibración", 10, 117);
     delay(5000);
     Update_Display();
   });
@@ -1542,12 +1542,12 @@ void Button_Init() { // Manage TTGO T-Display board buttons
   button_bottom.setLongClickDetectedHandler([](Button2 & b) {
     Serial.println("Bottom button long click");
     eepromConfig.self_calibration = false;
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_RED, TFT_WHITE);
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.setTextDatum(MC_DATUM);
-    tft.drawString("CALIBRACION: FORZADA", tft.width()/2, tft.height()/2);
+    //   tft.fillScreen(TFT_WHITE);
+    //   tft.setTextColor(TFT_RED, TFT_WHITE);
+    //   tft.setTextSize(1);
+    //   tft.setFreeFont(FF90);
+    //   tft.setTextDatum(MC_DATUM);
+    //   tft.drawString("CALIBRACION: FORZADA", //   tft.width()/2, //   tft.height()/2);
     delay(1000);
     Set_AutoSelfCalibration();
     Do_Calibrate_Sensor();
@@ -1558,12 +1558,12 @@ void Button_Init() { // Manage TTGO T-Display board buttons
   // Bottom button double click: restart
   button_bottom.setDoubleClickHandler([](Button2 & b) {
     Serial.println("Bottom button double click");
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_RED, TFT_WHITE);
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.setTextDatum(MC_DATUM);
-    tft.drawString("REINICIO", tft.width()/2, tft.height()/2);
+    //   tft.fillScreen(TFT_WHITE);
+    //   tft.setTextColor(TFT_RED, TFT_WHITE);
+    //   tft.setTextSize(1);
+    //   tft.setFreeFont(FF90);
+    //   tft.setTextDatum(MC_DATUM);
+    //   tft.drawString("REINICIO", //   tft.width()/2, //   tft.height()/2);
     delay(1000);
     ESP.restart();
   });
@@ -1572,12 +1572,12 @@ void Button_Init() { // Manage TTGO T-Display board buttons
   button_bottom.setTripleClickHandler([](Button2 & b) {
     Serial.println("Bottom button triple click");
     eepromConfig.self_calibration = true;
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_RED, TFT_WHITE);
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.setTextDatum(MC_DATUM);
-    tft.drawString("CALIBRACION: AUTO", tft.width()/2, tft.height()/2);
+    //   tft.fillScreen(TFT_WHITE);
+    //   tft.setTextColor(TFT_RED, TFT_WHITE);
+    //   tft.setTextSize(1);
+    //   tft.setFreeFont(FF90);
+    //   tft.setTextDatum(MC_DATUM);
+    //   tft.drawString("CALIBRACION: AUTO", //   tft.width()/2, //   tft.height()/2);
     delay(1000);
     Set_AutoSelfCalibration(); 
     Write_EEPROM();
@@ -1587,77 +1587,77 @@ void Button_Init() { // Manage TTGO T-Display board buttons
 }
 
 void Display_Init() { // TTGO T-Display init
-  tft.init();
-  tft.setRotation(1);
+  //   tft.init();
+  //   tft.setRotation(1);
 }
 
 void Display_Splash_Screen() { // Display Anaire splash screen
-  tft.pushImage(0, 0,  240, 135, anaire_ttgo_splash);
+  //   tft.pushImage(0, 0,  240, 135, anaire_ttgo_splash);
 }
 
 void Update_Display() { // Update display
 
-  tft.setTextDatum(TL_DATUM); // top left
+  //   tft.setTextDatum(TL_DATUM); // top left
   
   // Set screen and text colours based on CO2 value
   if (co2_device_status == co2_ok) {
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    //   tft.fillScreen(TFT_BLACK);
+    //   tft.setTextColor(TFT_GREEN, TFT_BLACK);
     digitalWrite(BUZZER_GPIO, LOW);
-    displayWifi(TFT_GREEN, TFT_BLACK, (WiFi.status() == WL_CONNECTED));
-    displayBuzzer(TFT_GREEN, eepromConfig.acoustic_alarm);
-    displayBatteryLevel(TFT_GREEN);
+//    displayWifi(TFT_GREEN, TFT_BLACK, (WiFi.status() == WL_CONNECTED));
+//    displayBuzzer(TFT_GREEN, eepromConfig.acoustic_alarm);
+//    displayBatteryLevel(TFT_GREEN);
   }
 
   else if (co2_device_status == co2_warning) {
-    tft.fillScreen(TFT_YELLOW);
-    tft.setTextColor(TFT_RED, TFT_YELLOW);
+    //   tft.fillScreen(TFT_YELLOW);
+    //   tft.setTextColor(TFT_RED, TFT_YELLOW);
     if (eepromConfig.acoustic_alarm) {
       digitalWrite(BUZZER_GPIO, HIGH);
     }
     delay(50);
     digitalWrite(BUZZER_GPIO, LOW);
-    displayWifi(TFT_RED, TFT_YELLOW, (WiFi.status() == WL_CONNECTED));
-    displayBuzzer(TFT_RED, eepromConfig.acoustic_alarm);
-    displayBatteryLevel(TFT_RED);
+//    displayWifi(TFT_RED, TFT_YELLOW, (WiFi.status() == WL_CONNECTED));
+//    displayBuzzer(TFT_RED, eepromConfig.acoustic_alarm);
+//    displayBatteryLevel(TFT_RED);
   } 
   
   else if (co2_device_status == co2_alarm) {
-    tft.fillScreen(TFT_RED);
-    tft.setTextColor(TFT_WHITE, TFT_RED);
+    //   tft.fillScreen(TFT_RED);
+    //   tft.setTextColor(TFT_WHITE, TFT_RED);
     if (eepromConfig.acoustic_alarm) {
       digitalWrite(BUZZER_GPIO, HIGH);
     }
     delay(250);
     digitalWrite(BUZZER_GPIO, LOW);
-    displayWifi(TFT_WHITE, TFT_RED, (WiFi.status() == WL_CONNECTED));
-    displayBuzzer(TFT_WHITE, eepromConfig.acoustic_alarm);
-    displayBatteryLevel(TFT_WHITE);
+//    displayWifi(TFT_WHITE, TFT_RED, (WiFi.status() == WL_CONNECTED));
+//    displayBuzzer(TFT_WHITE, eepromConfig.acoustic_alarm);
+//    displayBatteryLevel(TFT_WHITE);
   } 
 
   // Draw CO2 number
-  tft.setTextSize(1);
-  tft.setFreeFont(FF95);
-  tft.drawString(String(round(CO2ppm_value),0), 60, 30);
+  //   tft.setTextSize(1);
+  //   tft.setFreeFont(FF95);
+  //   tft.drawString(String(round(CO2ppm_value),0), 60, 30);
 
   // Draw CO2 units
-  tft.setTextSize(1);
-  tft.setFreeFont(FF90);
-  tft.drawString("PPM", 200, 115);
+  //   tft.setTextSize(1);
+  //   tft.setFreeFont(FF90);
+  //   tft.drawString("PPM", 200, 115);
 
   // Draw temperature
-  tft.drawString(String(temperature,1)+"C", 80, 115);
+  //   tft.drawString(String(temperature,1)+"C", 80, 115);
 
   // Draw humidity
-  tft.drawString(String(humidity,1)+"%", 140, 115);
+  //   tft.drawString(String(humidity,1)+"%", 140, 115);
 
   // Draw bluetooth device id
-  //if (bluetooth_active) {
-  //  tft.setTextDatum(8); // bottom right
-  //  tft.drawString(gadgetBle.getDeviceIdString(), 230, 125);
-  //}
+//  if (bluetooth_active) {
+  //  //   tft.setTextDatum(8); // bottom right
+  //  //   tft.drawString(gadgetBle.getDeviceIdString(), 230, 125);
+  }
   
-}
+//}
 
 void Get_Anaire_DeviceId() { // Get TTGO T-Display info and fill up anaire_device_id with last 6 digits (in HEX) of WiFi mac address
   uint32_t chipId = 0;
@@ -1709,29 +1709,29 @@ void Firmware_Update() {
   Serial.println("### FIRMWARE UPDATE ###");
 
   // For remote firmware update
-  WiFiClientSecure UpdateClient;
-  UpdateClient.setInsecure();
+  //WiFiClientSecure UpdateClient;
+  //UpdateClient.setInsecure();
 
   // Reading data over SSL may be slow, use an adequate timeout
-  UpdateClient.setTimeout(30); // timeout argument is defined in seconds for setTimeout
+  //UpdateClient.setTimeout(30); // timeout argument is defined in seconds for setTimeout
 
   // Update display
-  tft.fillScreen(TFT_ORANGE);
-  tft.setTextColor(TFT_BLACK, TFT_ORANGE);
-  tft.setTextSize(1);
-  tft.setFreeFont(FF90);
-  tft.setTextDatum(MC_DATUM);
-  tft.drawString("ACTUALIZACION EN CURSO", tft.width()/2, tft.height()/2);
+  //   tft.fillScreen(TFT_ORANGE);
+  //   tft.setTextColor(TFT_BLACK, TFT_ORANGE);
+  //   tft.setTextSize(1);
+  //   tft.setFreeFont(FF90);
+  //   tft.setTextDatum(MC_DATUM);
+  //   tft.drawString("ACTUALIZACION EN CURSO", //   tft.width()/2, //   tft.height()/2);
     
   //t_httpUpdate_return ret = httpUpdate.update(UpdateClient, "https://raw.githubusercontent.com/anaireorg/anaire-devices/main/src/anaire.PiCO2/anaire.PiCO2.ino.esp32.bin");
-  t_httpUpdate_return ret = httpUpdate.update(UpdateClient, "https://raw.githubusercontent.com/anaireorg/anaire-devices/main/Anaire.PiCO2/anaire.PiCO2/anaire.PiCO2.ino.esp32.bin");
-
+//  t_httpUpdate_return ret = httpUpdate.update(UpdateClient, "https://raw.githubusercontent.com/anaireorg/anaire-devices/main/Anaire.PiCO2/anaire.PiCO2/anaire.PiCO2.ino.esp32.bin");
+/*
   switch (ret) {
     
       case HTTP_UPDATE_FAILED:
         Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
-        tft.fillScreen(TFT_ORANGE);
-        tft.drawString("ACTUALIZACION FALLIDA", tft.width()/2, tft.height()/2);
+        //   tft.fillScreen(TFT_ORANGE);
+        //   tft.drawString("ACTUALIZACION FALLIDA", //   tft.width()/2, //   tft.height()/2);
         delay(1000);
         break;
 
@@ -1741,12 +1741,12 @@ void Firmware_Update() {
 
       case HTTP_UPDATE_OK:
         Serial.println("HTTP_UPDATE_OK");
-        tft.fillScreen(TFT_ORANGE);
-        tft.drawString("ACTUALIZACION COMPLETA", tft.width()/2, tft.height()/2);
+        //   tft.fillScreen(TFT_ORANGE);
+        //   tft.drawString("ACTUALIZACION COMPLETA", //   tft.width()/2, //   tft.height()/2);
         delay(1000);
         break;
     }
-
+*/
 }
 
 void displayBatteryLevel(int colour) { //Draw a battery showing the level of charge
@@ -1759,46 +1759,46 @@ void displayBatteryLevel(int colour) { //Draw a battery showing the level of cha
   
   // If battery voltage is up 4.5 then external power supply is working and battery is charging
   if (battery_voltage > USB_Voltage) {
-    tft.drawRect(5, 110, 30, 18, colour);
-    //tft.fillRect(35, 113, 5, 9, colour);
-    tft.fillRect(35, 114, 5, 9, colour);
-    tft.fillRect(7, 112, 5, 14, colour);
+    //   tft.drawRect(5, 110, 30, 18, colour);
+    ////   tft.fillRect(35, 113, 5, 9, colour);
+    //   tft.fillRect(35, 114, 5, 9, colour);
+    //   tft.fillRect(7, 112, 5, 14, colour);
     //delay(2500);
-    tft.fillRect(14, 112, 5, 14, colour);
+    //   tft.fillRect(14, 112, 5, 14, colour);
     //delay(2500);
-    tft.fillRect(21, 112, 5, 14, colour);
+    //   tft.fillRect(21, 112, 5, 14, colour);
     //delay(2500);
-    tft.fillRect(28, 112, 5, 14, colour);
+    //   tft.fillRect(28, 112, 5, 14, colour);
   } 
   else if (battery_voltage >= Voltage_Threshold_1) {
-    tft.drawRect(5, 110, 30, 18, colour);
-    tft.fillRect(35, 113, 5, 9, colour);
-    tft.fillRect(7, 112, 5, 14, colour);
-    tft.fillRect(14, 112, 5, 14, colour);
-    tft.fillRect(21, 112, 5, 14, colour);
-    tft.fillRect(28, 112, 5, 14, colour);
+    //   tft.drawRect(5, 110, 30, 18, colour);
+    //   tft.fillRect(35, 113, 5, 9, colour);
+    //   tft.fillRect(7, 112, 5, 14, colour);
+    //   tft.fillRect(14, 112, 5, 14, colour);
+    //   tft.fillRect(21, 112, 5, 14, colour);
+    //   tft.fillRect(28, 112, 5, 14, colour);
   } 
   else if (battery_voltage >= Voltage_Threshold_2) {
-    tft.drawRect(5, 110, 30, 18, colour);
-    tft.fillRect(35, 113, 5, 9, colour);
-    tft.fillRect(7, 112, 5, 14, colour);
-    tft.fillRect(14, 112, 5, 14, colour);
-    tft.fillRect(21, 112, 5, 14, colour);
+    //   tft.drawRect(5, 110, 30, 18, colour);
+    //   tft.fillRect(35, 113, 5, 9, colour);
+    //   tft.fillRect(7, 112, 5, 14, colour);
+    //   tft.fillRect(14, 112, 5, 14, colour);
+    //   tft.fillRect(21, 112, 5, 14, colour);
   } 
   else if (battery_voltage >= Voltage_Threshold_3) {
-    tft.drawRect(5, 110, 30, 18, colour);
-    tft.fillRect(35, 113, 5, 9, colour);
-    tft.fillRect(7, 112, 5, 14, colour);
-    tft.fillRect(14, 112, 5, 14, colour);
+    //   tft.drawRect(5, 110, 30, 18, colour);
+    //   tft.fillRect(35, 113, 5, 9, colour);
+    //   tft.fillRect(7, 112, 5, 14, colour);
+    //   tft.fillRect(14, 112, 5, 14, colour);
   } 
   else if (battery_voltage >= Voltage_Threshold_4) {
-    tft.drawRect(5, 110, 30, 18, colour);
-    tft.fillRect(35, 113, 5, 9, colour);
-    tft.fillRect(7, 112, 5, 14, colour);
+    //   tft.drawRect(5, 110, 30, 18, colour);
+    //   tft.fillRect(35, 113, 5, 9, colour);
+    //   tft.fillRect(7, 112, 5, 14, colour);
   }
   else {
-    tft.drawRect(5, 110, 30, 18, colour);
-    tft.fillRect(35, 113, 5, 9, colour);
+    //   tft.drawRect(5, 110, 30, 18, colour);
+    //   tft.fillRect(35, 113, 5, 9, colour);
 
     // Measurements are not trustable with this battery level
     Serial.println("Battery level too low");
@@ -1808,42 +1808,42 @@ void displayBatteryLevel(int colour) { //Draw a battery showing the level of cha
 }
 
 void displayWifi(int colour_1, int colour_2, boolean active) { //Draw WiFi icon
-  tft.drawCircle(20, 30, 14, colour_1);
-  tft.drawCircle(20, 30, 10, colour_1);
-  tft.fillCircle(20, 30, 6, colour_1);
-  tft.fillRect(6, 30, 30, 30, colour_2);
-  //tft.fillRect(18, 30, 4, 8, colour_1);
-  tft.fillRect(19, 30, 4, 8, colour_1);
+  //   tft.drawCircle(20, 30, 14, colour_1);
+  //   tft.drawCircle(20, 30, 10, colour_1);
+  //   tft.fillCircle(20, 30, 6, colour_1);
+  //   tft.fillRect(6, 30, 30, 30, colour_2);
+  ////   tft.fillRect(18, 30, 4, 8, colour_1);
+  //   tft.fillRect(19, 30, 4, 8, colour_1);
   
   if (!active) { // draw an X over
-    tft.drawLine(6, 16, 34, 46, colour_1);
-    tft.drawLine(34, 16, 6, 46, colour_1); 
+    //   tft.drawLine(6, 16, 34, 46, colour_1);
+    //   tft.drawLine(34, 16, 6, 46, colour_1); 
   }
   
 }
 
 void displayBuzzer(int colour, boolean active) { //Draw buzzer status
-  //tft.fillRect(14, 65, 4, 10, colour);
-  tft.fillRect(14, 66, 4, 11, colour);
-  tft.fillTriangle(25, 60, 16, 70, 25, 80, colour);
+  ////   tft.fillRect(14, 65, 4, 10, colour);
+  //   tft.fillRect(14, 66, 4, 11, colour);
+  //   tft.fillTriangle(25, 60, 16, 70, 25, 80, colour);
   
   if (!active) { // draw an X over
-    tft.drawLine(10, 90, 30, 55, colour);
-    tft.drawLine(30, 90, 10, 55, colour);
+    //   tft.drawLine(10, 90, 30, 55, colour);
+    //   tft.drawLine(30, 90, 10, 55, colour);
   }
   
 }
 
 void Suspend_Device() {
   //int r = digitalRead(TFT_BL);
-  tft.fillScreen(TFT_BLACK);
-  tft.setTextColor(TFT_GREEN, TFT_BLACK);
-  tft.setTextDatum(MC_DATUM);
-  tft.drawString(" Presione un boton para despertar",  tft.width()/2, tft.height()/2);
+  //   tft.fillScreen(TFT_BLACK);
+  //   tft.setTextColor(TFT_GREEN, TFT_BLACK);
+  //   tft.setTextDatum(MC_DATUM);
+  //   tft.drawString(" Presione un boton para despertar",  //   tft.width()/2, //   tft.height()/2);
   espDelay(3000);
   //digitalWrite(TFT_BL, !r);
-  tft.writecommand(TFT_DISPOFF);
-  tft.writecommand(TFT_SLPIN);
+  //   tft.writecommand(TFT_DISPOFF);
+  //   tft.writecommand(TFT_SLPIN);
   
   // After using light sleep, you need to disable timer wake, because here use external IO port to wake up
   esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TIMER);

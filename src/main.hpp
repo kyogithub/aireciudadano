@@ -33,11 +33,9 @@ void Suspend_Device();
 void Wipe_EEPROM();
 void Firmware_Update();
 void Set_Measurement_Interval();
+void Write_Bluetooth();
 
 void displayBatteryLevel(int colour);
 void displayWifi(int colour_1, int colour_2, boolean active);
 void displayBuzzer(int colour, boolean active);
 void Receive_Message_Cloud_App_MQTT(char* topic, byte* payload, unsigned int length);
-
-//#define TFT_SLPIN   0x10
-//#define TFT_DISPOFF 0x28
