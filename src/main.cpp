@@ -130,7 +130,7 @@ uint16_t SCD30_MEASUREMENT_INTERVAL = measurements_loop_duration / 1000; // time
 #include "MHZ19.h"                                     // https://github.com/WifWaf/MH-Z19 Library
 MHZ19 myMHZ19;
 #define MHZ_BAUDRATE 9600                              // Native to the sensor (do not change)
-const unsigned long MHZ14A_WARMING_TIME = 2000;      // MHZ14A CO2 sensor warming time: 3 minutes = 180000 ms
+const unsigned long MHZ14A_WARMING_TIME = 4000;      // MHZ14A CO2 sensor warming time: 3 minutes = 180000 ms
 const unsigned long MHZ14A_SERIAL_TIMEOUT = 3000;      // MHZ14A CO2 serial start timeout: 3 seconds = 3000 ms
 const unsigned long MHZ14A_CALIBRATION_TIME = 1200000; // MHZ14A CO2 CALIBRATION TIME: 20 min = 1200000 ms
 #define swSerialRX_gpio 13
