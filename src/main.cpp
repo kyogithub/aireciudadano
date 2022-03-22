@@ -125,19 +125,19 @@ unsigned long SCD30_CALIBRATION_TIME = 10000; // SCD30 CO2 CALIBRATION TIME: 1 m
 
 // WiFi
 //#include <WiFi.h>
-#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
+//#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 //#include "esp_wpa2.h" //wpa2 library for connections to Enterprise networks
 const int WIFI_CONNECT_TIMEOUT = 10000;           // 10 seconds
-WiFiServer wifi_server(80);                       
-WiFiClient wifi_client;
+//WiFiServer wifi_server(80);                       
+//WiFiClient wifi_client;
 
 // MQTT
-#include <PubSubClient.h>
-char MQTT_message[256];
-PubSubClient MQTT_client(wifi_client);
-char received_payload[384];
-String MQTT_send_topic;
-String MQTT_receive_topic;
+//#include <PubSubClient.h>
+//char MQTT_message[256];
+//PubSubClient MQTT_client("test1");
+//char received_payload[384];
+//String MQTT_send_topic;
+//String MQTT_receive_topic;
   
 //JSON
 #include <ArduinoJson.h>
@@ -181,8 +181,8 @@ void setup() {
   Get_Anaire_DeviceId();
   
   // Set MQTT topics
-  MQTT_send_topic = "measurement"; // Measurements are sent to this topic
-  MQTT_receive_topic = "config/" + anaire_device_id; // Config messages will be received in config/id
+  //MQTT_send_topic = "measurement"; // Measurements are sent to this topic
+  //MQTT_receive_topic = "config/" + anaire_device_id; // Config messages will be received in config/id
 
   // Read EEPROM config values
   //Wipe_EEPROM();
@@ -204,19 +204,19 @@ void setup() {
   Button_Init();
 
   // Attempt to connect to WiFi network:
-  Connect_WiFi();
+//  Connect_WiFi();
 
   // Attempt to connect to MQTT broker
-  if (!err_wifi) {
-    Init_MQTT();
-  }
+//  if (!err_wifi) {
+//    Init_MQTT();
+//  }
 
   // Initialize and warm up CO2 sensor
   Setup_Sensor();
 
   // Init control loops
   measurements_loop_start = millis();
-  MQTT_loop_start = millis();
+//  MQTT_loop_start = millis();
   errors_loop_start = millis();
 
   Serial.println("### ANAIRE PiCO2 DEVICE SETUP FINISHED ###\n");
@@ -278,7 +278,7 @@ void loop() {
     }
     
   }
-
+/*
   // MQTT loop
   if ((millis() - MQTT_loop_start) >= MQTT_loop_duration)
   {
@@ -296,7 +296,7 @@ void loop() {
     CO2ppm_samples = 0;
 
   }
-
+*/
   // Errors loop
   if ((millis() - errors_loop_start) >= errors_loop_duration)
   {
@@ -310,40 +310,40 @@ void loop() {
       //Setup_Sensor();  // Init co2 sensors
     }
 
-    if (WiFi.status() != WL_CONNECTED) {
-      Serial.println ("--- err_wifi");
-      err_wifi = true;
-      WiFi.reconnect();
-    }
-    else {
-      err_wifi = false;
-    }
+//    if (WiFi.status() != WL_CONNECTED) {
+//      Serial.println ("--- err_wifi");
+//      err_wifi = true;
+//      WiFi.reconnect();
+//    }
+//    else {
+//      err_wifi = false;
+//    }
 
     //Reconnect MQTT if needed
-    if ((!MQTT_client.connected()) && (!err_wifi)) {
-      Serial.println ("--- err_mqtt");
-      err_MQTT = true;
-    }
+//    if ((!MQTT_client.connected()) && (!err_wifi)) {
+//      Serial.println ("--- err_mqtt");
+//      err_MQTT = true;
+//    }
     
     //Reconnect MQTT if needed
-    if ((err_MQTT) && (!err_wifi)) {
-      Serial.println ("--- MQTT reconnect");
-      // Attempt to connect to MQTT broker
-      MQTT_Reconnect();
-      Init_MQTT();
-    }
+//    if ((err_MQTT) && (!err_wifi)) {
+//      Serial.println ("--- MQTT reconnect");
+//      // Attempt to connect to MQTT broker
+//      MQTT_Reconnect();
+//      Init_MQTT();
+//    }
 
   }
 
   // From here, all other tasks performed outside of measurements, MQTT and error loops
   
   // if not there are not connectivity errors, receive MQTT messages
-  if ((!err_MQTT) && (!err_wifi)) {
-    MQTT_client.loop();
-  }
+//  if ((!err_MQTT) && (!err_wifi)) {
+//    MQTT_client.loop();
+//  }
     
   // Process wifi server requests
-  Check_WiFi_Server();
+//  Check_WiFi_Server();
 
   // Process bluetooth events
   #if BLUETOOTH
@@ -361,7 +361,7 @@ void loop() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 void WiFiEvent(WiFiEvent_t event) {
     Serial.printf("[WiFi-event] event: %d - ", event);
 
@@ -445,14 +445,14 @@ void WiFiEvent(WiFiEvent_t event) {
         default: break;
     }
 }
-
+*/
 void Interrupt_Restart(Button2 &btn) { // Restarts the device if any button is pressed while calibrating or in captive portal
   Serial.println("Any button click");
   if ((InCaptivePortal) || (Calibrating)) {
      ESP.restart();
   }
 }
-
+/*
 void Connect_WiFi() { // Connect to WiFi
      
   WiFi.disconnect(true); //disconnect form wifi to set new wifi connection
@@ -567,7 +567,6 @@ void Print_WiFi_Status() { // Print wifi status on serial monitor
   Serial.print(WiFi.RSSI());
   Serial.println(" dBm");
 
-  /*
   // Print authentication used:
   Serial.print("Encryption type: ");
   switch (WiFi.encryptionType()) {
@@ -595,8 +594,8 @@ void Print_WiFi_Status() { // Print wifi status on serial monitor
   }
   */
   
-}
-
+//}
+/*
 void Check_WiFi_Server() { // Wifi server
   WiFiClient client = wifi_server.available();   // listen for incoming clients
   if (client) {                             // if you get a client,
@@ -871,7 +870,8 @@ void Start_Captive_Portal() { // Run a captive portal to configure WiFi and MQTT
     ESP.restart(); 
     
 }
-
+*/
+/*
 void Init_MQTT() { // MQTT Init function
   Serial.print("Attempting to connect to the MQTT broker ");
   Serial.print(eepromConfig.MQTT_server);
@@ -1098,7 +1098,7 @@ void Receive_Message_Cloud_App_MQTT(char* topic, byte* payload, unsigned int len
   }
   
 }
-
+*/
 void Setup_Sensor() { // Identify and initialize CO2, temperature and humidity sensor
 
   // Try Sensirion SCD30
@@ -1245,9 +1245,9 @@ void Do_Calibrate_Sensor() { // Calibrate CO2 sensor
       //   tft.drawString("CALIBRANDO " + String(counter), //   tft.width()/2, //   tft.height()/2);
       
       // if not there are not connectivity errors, receive MQTT messages, to be able to interrupt calibration process
-      if ((!err_MQTT) && (!err_wifi)) {
-        MQTT_client.loop();
-      }
+//      if ((!err_MQTT) && (!err_wifi)) {
+//        MQTT_client.loop();
+//      }
       Serial.print(counter);
       Serial.print(".");
       delay(500);
@@ -1515,7 +1515,7 @@ void Button_Init() { // Manage TTGO T-Display board buttons
   // Top button triple click: launch captive portal to configure WiFi and MQTT sleep
   button_top.setTripleClickHandler([](Button2 & b) {
     Serial.println("Top button triple click");
-    Start_Captive_Portal();
+//    Start_Captive_Portal();
   });
 
   // Bottom button short click: show buttons info
