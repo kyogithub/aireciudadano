@@ -1266,7 +1266,7 @@ void Setup_Sensor()
 
   Serial.println("Test Plantower Sensor");
   Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, PMS_TX, PMS_RX);
-  delay(3000);
+  delay(1000);
 
   while (Serial1.available())
   {
@@ -1979,13 +1979,13 @@ void Button_Init()
   button_top.setDoubleClickHandler([](Button2 &b)
                                    {
     Serial.println("Top button double click");
-    Suspend_Device(); });
+    Start_Captive_Portal(); });
 
   // Top button triple click: launch captive portal to configure WiFi and MQTT sleep
   button_top.setTripleClickHandler([](Button2 &b)
                                    {
     Serial.println("Top button triple click");
-    Start_Captive_Portal(); });
+    Suspend_Device(); });
 
   // Bottom button short click: show buttons info
   button_bottom.setClickHandler([](Button2 &b)
