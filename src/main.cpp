@@ -72,7 +72,7 @@ boolean err_sensor = false;
 // Measurements loop: time between measurements
 unsigned int measurements_loop_duration = 1000; // 1 second
 unsigned long measurements_loop_start;          // holds a timestamp for each control loop start
-unsigned int Bluetooth_loop_times = 30;          // 5 seconds
+unsigned int Bluetooth_loop_times = 5;          // 5 seconds
 unsigned int Con_loop_times = 0;
 
 // MQTT loop: time between MQTT measurements sent to the cloud
@@ -1449,7 +1449,7 @@ void Update_Display()
   // Draw CO2 units
   tft.setTextSize(1);
   tft.setFreeFont(FF90);
-  tft.drawString("ug/m3", 190, 70);
+  tft.drawString("ug/m3", 194, 70);
 
   // Draw temperature
   tft.drawString(String(temperature, 1) + "C", 80, 115);
