@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 #include "main.hpp"
-#define BLUETOOTH false // Set to true in case bluetooth is desired
+#define BLUETOOTH true // Set to true in case bluetooth is desired
 
 // device id, automatically filled by concatenating the last three fields of the wifi mac address, removing the ":" in betweeen, in HEX format. Example: ChipId (HEX) = 85e646, ChipId (DEC) = 8775238, macaddress = E0:98:06:85:E6:46
 String sw_version = "v0.3";
@@ -158,7 +158,7 @@ bool bluetooth_active = false;
 // WiFi
 //#include <WiFi.h>
 #include <WiFiManager.h>                // https://github.com/tzapu/WiFiManager
-#include "esp_wpa2.h"                   //wpa2 library for connections to Enterprise networks
+//#include "esp_wpa2.h"                   //wpa2 library for connections to Enterprise networks
 const int WIFI_CONNECT_TIMEOUT = 10000; // 10 seconds
 WiFiServer wifi_server(80);
 WiFiClient wifi_client;
@@ -511,19 +511,19 @@ void Connect_WiFi()
   {
     Serial.println("Attempting to authenticate...");
   }
-  else
-  { // set up wpa2 enterprise
-    Serial.println("Attempting to authenticate using WPA2 Enterprise...");
-    Serial.print("User: ");
-    Serial.println(eepromConfig.wifi_user);
-    Serial.print("Password: ");
-    Serial.println(eepromConfig.wifi_password);
-    esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user));         // provide identity
-    esp_wifi_sta_wpa2_ent_set_username((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user));         // provide username --> identity and username is same
-    esp_wifi_sta_wpa2_ent_set_password((uint8_t *)eepromConfig.wifi_password, strlen(eepromConfig.wifi_password)); // provide password
-    esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT();                                                         // set config settings to default
-    esp_wifi_sta_wpa2_ent_enable(&config);                                                                         // set config settings to enable function
-  }
+//  else
+//  { // set up wpa2 enterprise
+//    Serial.println("Attempting to authenticate using WPA2 Enterprise...");
+//    Serial.print("User: ");
+//    Serial.println(eepromConfig.wifi_user);
+//    Serial.print("Password: ");
+//    Serial.println(eepromConfig.wifi_password);
+//    esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user));         // provide identity
+//    esp_wifi_sta_wpa2_ent_set_username((uint8_t *)eepromConfig.wifi_user, strlen(eepromConfig.wifi_user));         // provide username --> identity and username is same
+//    esp_wifi_sta_wpa2_ent_set_password((uint8_t *)eepromConfig.wifi_password, strlen(eepromConfig.wifi_password)); // provide password
+//    esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT();                                                         // set config settings to default
+//    esp_wifi_sta_wpa2_ent_enable(&config);                                                                         // set config settings to enable function
+//  }
 
   // Connect to wifi
   WiFi.begin();
@@ -825,9 +825,9 @@ void Start_Captive_Portal()
   WiFi.mode(WIFI_AP); // explicitly set mode, esp defaults to STA+AP
 
   // Captive portal parameters
-  WiFiManagerParameter custom_wifi_html("<p>Set WPA2 Enterprise</p>"); // only custom html
-  WiFiManagerParameter custom_wifi_user("User", "WPA2 Enterprise user", eepromConfig.wifi_user, 24);
-  WiFiManagerParameter custom_wifi_password("Password", "WPA2 Enterprise Password", eepromConfig.wifi_password, 24);
+//  WiFiManagerParameter custom_wifi_html("<p>Set WPA2 Enterprise</p>"); // only custom html
+//  WiFiManagerParameter custom_wifi_user("User", "WPA2 Enterprise user", eepromConfig.wifi_user, 24);
+//  WiFiManagerParameter custom_wifi_password("Password", "WPA2 Enterprise Password", eepromConfig.wifi_password, 24);
   WiFiManagerParameter custom_mqtt_html("<p>Set MQTT server</p>"); // only custom html
   WiFiManagerParameter custom_mqtt_server("Server", "MQTT server", eepromConfig.MQTT_server, 24);
   char port[6];
@@ -837,9 +837,9 @@ void Start_Captive_Portal()
   // wifiManager.setSaveParamsCallback(saveParamCallback);
 
   // Add parameters
-  wifiManager.addParameter(&custom_wifi_html);
-  wifiManager.addParameter(&custom_wifi_user);
-  wifiManager.addParameter(&custom_wifi_password);
+//  wifiManager.addParameter(&custom_wifi_html);
+//  wifiManager.addParameter(&custom_wifi_user);
+//  wifiManager.addParameter(&custom_wifi_password);
   wifiManager.addParameter(&custom_mqtt_html);
   wifiManager.addParameter(&custom_mqtt_server);
   wifiManager.addParameter(&custom_mqtt_port);
@@ -866,22 +866,6 @@ void Start_Captive_Portal()
   // Save parameters to EEPROM only if any of them changed
   bool write_eeprom = false;
 
-  if (eepromConfig.wifi_user != custom_wifi_user.getValue())
-  {
-    strncpy(eepromConfig.wifi_user, custom_wifi_user.getValue(), sizeof(eepromConfig.wifi_user));
-    eepromConfig.wifi_user[sizeof(eepromConfig.wifi_user) - 1] = '\0';
-    write_eeprom = true;
-    Serial.print("WiFi user: ");
-    Serial.println(eepromConfig.wifi_user);
-  }
-  if (eepromConfig.wifi_password != custom_wifi_password.getValue())
-  {
-    strncpy(eepromConfig.wifi_password, custom_wifi_password.getValue(), sizeof(eepromConfig.wifi_password));
-    eepromConfig.wifi_password[sizeof(eepromConfig.wifi_password) - 1] = '\0';
-    write_eeprom = true;
-    Serial.print("WiFi password: ");
-    Serial.println(eepromConfig.wifi_password);
-  }
   if (eepromConfig.MQTT_server != custom_mqtt_server.getValue())
   {
     strncpy(eepromConfig.MQTT_server, custom_mqtt_server.getValue(), sizeof(eepromConfig.MQTT_server));
@@ -1843,10 +1827,10 @@ void displayBatteryLevel(int colour)
 { // Draw a battery showing the level of charge
 
   // Measure the battery voltage
-//  battery_voltage = ((float)analogRead(ADC_PIN) / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
+  battery_voltage = ((float)analogRead(ADC_PIN) / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
 
-  //  Serial.print("battery voltage: ");
-  //  Serial.println(battery_voltage);
+    Serial.print("battery voltage: ");
+    Serial.println(battery_voltage);
 
   // If battery voltage is up 4.5 then external power supply is working and battery is charging
   if (battery_voltage > USB_Voltage)
