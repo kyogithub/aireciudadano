@@ -157,25 +157,25 @@ bool bluetooth_active = false;
 #endif
 
 // WiFi
-#include <WiFi.h>
-#include <esp_wifi.h>  
+//#include <WiFi.h>
+//#include <esp_wifi.h>  
 //#include <WiFiManager.h>                // https://github.com/tzapu/WiFiManager
 //#include "esp_wpa2.h"                   //wpa2 library for connections to Enterprise networks
-const int WIFI_CONNECT_TIMEOUT = 10000; // 10 seconds
-WiFiServer wifi_server(80);
-WiFiClient wifi_client;
+//const int WIFI_CONNECT_TIMEOUT = 10000; // 10 seconds
+//WiFiServer wifi_server(80);
+//WiFiClient wifi_client;
 
 // MQTT
-#include <PubSubClient.h>
-char MQTT_message[256];
-PubSubClient MQTT_client(wifi_client);
-char received_payload[384];
-String MQTT_send_topic;
-String MQTT_receive_topic;
+//#include <PubSubClient.h>
+//char MQTT_message[256];
+//PubSubClient MQTT_client(wifi_client);
+//char received_payload[384];
+//String MQTT_send_topic;
+//String MQTT_receive_topic;
 
 // JSON
-#include <ArduinoJson.h>
-StaticJsonDocument<384> jsonBuffer;
+//#include <ArduinoJson.h>
+//StaticJsonDocument<384> jsonBuffer;
 
 // OTA Update
 //#include <HTTPClient.h>
@@ -217,8 +217,8 @@ void setup()
   Get_Anaire_DeviceId();
 
   // Set MQTT topics
-  MQTT_send_topic = "measurement";                   // Measurements are sent to this topic
-  MQTT_receive_topic = "config/" + anaire_device_id; // Config messages will be received in config/id
+//  MQTT_send_topic = "measurement";                   // Measurements are sent to this topic
+//  MQTT_receive_topic = "config/" + anaire_device_id; // Config messages will be received in config/id
 
   // Read EEPROM config values
   // Wipe_EEPROM();
@@ -236,20 +236,20 @@ void setup()
   Button_Init();
 
   // Attempt to connect to WiFi network:
-  Connect_WiFi();
+//  Connect_WiFi();
 
   // Attempt to connect to MQTT broker
-  if (!err_wifi)
-  {
-    Init_MQTT();
-  }
+//  if (!err_wifi)
+//  {
+//    Init_MQTT();
+//  }
 
   // Initialize and warm up CO2 sensor
   Setup_Sensor();
 
   // Init control loops
   measurements_loop_start = millis();
-  MQTT_loop_start = millis();
+//  MQTT_loop_start = millis();
   errors_loop_start = millis();
 
   Serial.println("### ANAIRE PiCO2 DEVICE SETUP FINISHED ###\n");
@@ -314,22 +314,22 @@ void loop()
   }
 
   // MQTT loop
-  if ((millis() - MQTT_loop_start) >= MQTT_loop_duration)
-  {
+//  if ((millis() - MQTT_loop_start) >= MQTT_loop_duration)
+//  {
 
     // New timestamp for the loop start time
-    MQTT_loop_start = millis();
+//    MQTT_loop_start = millis();
 
     // Message the MQTT broker in the cloud app to send the measured values
-    if ((!err_wifi) && (CO2ppm_samples > 0))
-    {
-      Send_Message_Cloud_App_MQTT();
-    }
+//    if ((!err_wifi) && (CO2ppm_samples > 0))
+//    {
+//      Send_Message_Cloud_App_MQTT();
+//    }
 
     // Reset samples after sending them to the MQTT server
-    CO2ppm_accumulated = 0.0;
+//    CO2ppm_accumulated = 0.0;
     CO2ppm_samples = 0.0;
-  }
+//  }
 
   // Errors loop
   if ((millis() - errors_loop_start) >= errors_loop_duration)
@@ -345,41 +345,41 @@ void loop()
       // Setup_Sensor();  // Init co2 sensors
     }
 
-    if (WiFi.status() != WL_CONNECTED)
-    {
-      Serial.println("--- err_wifi");
-      err_wifi = true;
-      WiFi.reconnect();
-    }
-    else
-    {
-      err_wifi = false;
-    }
+//    if (WiFi.status() != WL_CONNECTED)
+//    {
+//      Serial.println("--- err_wifi");
+//      err_wifi = true;
+//      WiFi.reconnect();
+//    }
+//    else
+//    {
+//      err_wifi = false;
+//    }
 
     // Reconnect MQTT if needed
-    if ((!MQTT_client.connected()) && (!err_wifi))
-    {
-      Serial.println("--- err_mqtt");
-      err_MQTT = true;
-    }
+//    if ((!MQTT_client.connected()) && (!err_wifi))
+//    {
+//      Serial.println("--- err_mqtt");
+//      err_MQTT = true;
+//    }
 
     // Reconnect MQTT if needed
-    if ((err_MQTT) && (!err_wifi))
-    {
-      Serial.println("--- MQTT reconnect");
+//    if ((err_MQTT) && (!err_wifi))
+//    {
+//      Serial.println("--- MQTT reconnect");
       // Attempt to connect to MQTT broker
-      MQTT_Reconnect();
-      Init_MQTT();
-    }
+//      MQTT_Reconnect();
+//      Init_MQTT();
+//    }
   }
 
   // From here, all other tasks performed outside of measurements, MQTT and error loops
 
   // if not there are not connectivity errors, receive MQTT messages
-  if ((!err_MQTT) && (!err_wifi))
-  {
-    MQTT_client.loop();
-  }
+//  if ((!err_MQTT) && (!err_wifi))
+//  {
+//    MQTT_client.loop();
+//  }
 
   // Process wifi server requests
 //  Check_WiFi_Server();
@@ -400,6 +400,7 @@ void loop()
 // FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+/*
 void WiFiEvent(WiFiEvent_t event)
 {
   Serial.printf("[WiFi-event] event: %d - ", event);
@@ -486,6 +487,7 @@ void WiFiEvent(WiFiEvent_t event)
     break;
   }
 }
+*/
 
 void Interrupt_Restart(Button2 &btn)
 { // Restarts the device if any button is pressed while calibrating or in captive portal
@@ -496,6 +498,7 @@ void Interrupt_Restart(Button2 &btn)
   }
 }
 
+/*
 void Connect_WiFi()
 { // Connect to WiFi
 
@@ -618,7 +621,6 @@ void Print_WiFi_Status()
   Serial.print(WiFi.RSSI());
   Serial.println(" dBm");
 
-  /*
   // Print authentication used:
   Serial.print("Encryption type: ");
   switch (WiFi.encryptionType()) {
@@ -644,7 +646,6 @@ void Print_WiFi_Status()
       Serial.println("Unknown encryption type");
       break;
   }
-  */
 }
 
 void Init_MQTT()
@@ -862,6 +863,7 @@ void Receive_Message_Cloud_App_MQTT(char *topic, byte *payload, unsigned int len
 //    Firmware_Update();
   }
 }
+*/
 
 void Setup_Sensor()
 { // Identify and initialize CO2, temperature and humidity sensor
@@ -1241,24 +1243,24 @@ void Print_Config()
   Serial.println(eepromConfig.CO2ppm_warning_threshold);
   Serial.print("CO2ppm Alarm threshold: ");
   Serial.println(eepromConfig.CO2ppm_alarm_threshold);
-  Serial.print("MQTT server: ");
-  Serial.println(eepromConfig.MQTT_server);
-  Serial.print("MQTT Port: ");
-  Serial.println(eepromConfig.MQTT_port);
-  Serial.print("Acoustic Alarm: ");
-  Serial.println(eepromConfig.acoustic_alarm);
-  Serial.print("Self Calibration: ");
-  Serial.println(eepromConfig.self_calibration);
-  Serial.print("Forced Recalibration Reference: ");
-  Serial.println(eepromConfig.forced_recalibration_reference);
-  Serial.print("Temperature Offset: ");
-  Serial.println(eepromConfig.temperature_offset);
-  Serial.print("Altitude Compensation: ");
-  Serial.println(eepromConfig.altitude_compensation);
-  Serial.print("WiFi user: ");
-  Serial.println(eepromConfig.wifi_user);
-  Serial.print("WiFi user's password: ");
-  Serial.println(eepromConfig.wifi_password);
+//  Serial.print("MQTT server: ");
+//  Serial.println(eepromConfig.MQTT_server);
+//  Serial.print("MQTT Port: ");
+//  Serial.println(eepromConfig.MQTT_port);
+//  Serial.print("Acoustic Alarm: ");
+//  Serial.println(eepromConfig.acoustic_alarm);
+//  Serial.print("Self Calibration: ");
+//  Serial.println(eepromConfig.self_calibration);
+//  Serial.print("Forced Recalibration Reference: ");
+//  Serial.println(eepromConfig.forced_recalibration_reference);
+//  Serial.print("Temperature Offset: ");
+//  Serial.println(eepromConfig.temperature_offset);
+//  Serial.print("Altitude Compensation: ");
+//  Serial.println(eepromConfig.altitude_compensation);
+//  Serial.print("WiFi user: ");
+//  Serial.println(eepromConfig.wifi_user);
+//  Serial.print("WiFi user's password: ");
+//  Serial.println(eepromConfig.wifi_password);
   Serial.println("#######################################");
 }
 
@@ -1301,22 +1303,22 @@ void Button_Init()
     tft.setFreeFont(FF90);
     tft.drawString("ID " + anaire_device_id, 10, 5);
     tft.drawString("SW " + sw_version, 10, 21);
-    tft.drawString("SSID " + String(WiFi.SSID()), 10, 37);
-    tft.drawString("IP " + WiFi.localIP().toString(), 10, 53);
-    tft.drawString("MAC " + String(WiFi.macAddress()), 10, 69);
-    tft.drawString("RSSI " + String(WiFi.RSSI()), 10, 85);
-    if (eepromConfig.acoustic_alarm) {
-      tft.drawString("ALARMA: SI", 10, 101);
-    }
-    else {
-      tft.drawString("ALARMA: NO", 10, 101);
-    }
-    if (eepromConfig.self_calibration) {
-      tft.drawString("CALIBRACION: AUTO", 10, 117);
-    }
-    else {
-      tft.drawString("CALIBRACION: FORZADA", 10, 117);
-    }
+//    tft.drawString("SSID " + String(WiFi.SSID()), 10, 37);
+//    tft.drawString("IP " + WiFi.localIP().toString(), 10, 53);
+//    tft.drawString("MAC " + String(WiFi.macAddress()), 10, 69);
+//    tft.drawString("RSSI " + String(WiFi.RSSI()), 10, 85);
+//    if (eepromConfig.acoustic_alarm) {
+//      tft.drawString("ALARMA: SI", 10, 101);
+//    }
+//    else {
+//      tft.drawString("ALARMA: NO", 10, 101);
+//    }
+//    if (eepromConfig.self_calibration) {
+//      tft.drawString("CALIBRACION: AUTO", 10, 117);
+//    }
+//    else {
+//      tft.drawString("CALIBRACION: FORZADA", 10, 117);
+//    }
     delay(5000); // keep the info in the display for 5s
     Update_Display(); });
 
@@ -1329,14 +1331,14 @@ void Button_Init()
     tft.setTextSize(1);
     tft.setFreeFont(FF90);
     tft.setTextDatum(MC_DATUM);
-    if (eepromConfig.acoustic_alarm) {
-      eepromConfig.acoustic_alarm = false;
-      tft.drawString("ALARMA: NO", tft.width()/2, tft.height()/2);
-    }
-    else {
-      eepromConfig.acoustic_alarm = true;
-      tft.drawString("ALARMA: SI", tft.width()/2, tft.height()/2);
-    }
+//    if (eepromConfig.acoustic_alarm) {
+//      eepromConfig.acoustic_alarm = false;
+//      tft.drawString("ALARMA: NO", tft.width()/2, tft.height()/2);
+//    }
+//    else {
+//      eepromConfig.acoustic_alarm = true;
+//      tft.drawString("ALARMA: SI", tft.width()/2, tft.height()/2);
+//    }
     Write_EEPROM();
     delay(5000); // keep the info in the display for 5s
     Update_Display(); });
@@ -1363,7 +1365,7 @@ void Button_Init()
     tft.drawString("Abajo Corto: Info", 10, 69);
     tft.drawString("  Largo: Calibrar", 10, 85);
     tft.drawString("  Doble: Reiniciar", 10, 101);
-    tft.drawString("  Triple: Autocalibración", 10, 117);
+//    tft.drawString("  Triple: Autocalibración", 10, 117);
     delay(5000);
     Update_Display(); });
 
@@ -1404,8 +1406,8 @@ void Update_Display()
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
 //    digitalWrite(BUZZER_GPIO, LOW);
-    displayWifi(TFT_GREEN, TFT_BLACK, (WiFi.status() == WL_CONNECTED));
-    displayBuzzer(TFT_GREEN, eepromConfig.acoustic_alarm);
+//    displayWifi(TFT_GREEN, TFT_BLACK, (WiFi.status() == WL_CONNECTED));
+//    displayBuzzer(TFT_GREEN, eepromConfig.acoustic_alarm);
     displayBatteryLevel(TFT_GREEN);
   }
 
@@ -1419,8 +1421,8 @@ void Update_Display()
     }
     delay(50);
 //    digitalWrite(BUZZER_GPIO, LOW);
-    displayWifi(TFT_RED, TFT_YELLOW, (WiFi.status() == WL_CONNECTED));
-    displayBuzzer(TFT_RED, eepromConfig.acoustic_alarm);
+//    displayWifi(TFT_RED, TFT_YELLOW, (WiFi.status() == WL_CONNECTED));
+//    displayBuzzer(TFT_RED, eepromConfig.acoustic_alarm);
     displayBatteryLevel(TFT_RED);
   }
 
@@ -1434,8 +1436,8 @@ void Update_Display()
     }
     delay(250);
 //    digitalWrite(BUZZER_GPIO, LOW);
-    displayWifi(TFT_WHITE, TFT_RED, (WiFi.status() == WL_CONNECTED));
-    displayBuzzer(TFT_WHITE, eepromConfig.acoustic_alarm);
+//    displayWifi(TFT_WHITE, TFT_RED, (WiFi.status() == WL_CONNECTED));
+//    displayBuzzer(TFT_WHITE, eepromConfig.acoustic_alarm);
     displayBatteryLevel(TFT_WHITE);
   }
 
@@ -1602,7 +1604,7 @@ void displayWifi(int colour_1, int colour_2, boolean active)
     tft.drawLine(34, 16, 6, 46, colour_1);
   }
 }
-
+/*
 void displayBuzzer(int colour, boolean active)
 { // Draw buzzer status
   // tft.fillRect(14, 65, 4, 10, colour);
@@ -1615,6 +1617,7 @@ void displayBuzzer(int colour, boolean active)
     tft.drawLine(30, 90, 10, 55, colour);
   }
 }
+*/
 
 void Suspend_Device()
 {
