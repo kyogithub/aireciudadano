@@ -156,8 +156,9 @@ bool bluetooth_active = false;
 #endif
 
 // WiFi
-//#include <WiFi.h>
-#include <WiFiManager.h>                // https://github.com/tzapu/WiFiManager
+#include <WiFi.h>
+#include <esp_wifi.h>  
+//#include <WiFiManager.h>                // https://github.com/tzapu/WiFiManager
 //#include "esp_wpa2.h"                   //wpa2 library for connections to Enterprise networks
 const int WIFI_CONNECT_TIMEOUT = 10000; // 10 seconds
 WiFiServer wifi_server(80);
@@ -183,7 +184,7 @@ StaticJsonDocument<384> jsonBuffer;
 bool updating = false;
 
 // To know when the device is in the following states
-bool InCaptivePortal = false;
+//bool InCaptivePortal = false;
 bool Calibrating = false;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -488,7 +489,7 @@ void WiFiEvent(WiFiEvent_t event)
 void Interrupt_Restart(Button2 &btn)
 { // Restarts the device if any button is pressed while calibrating or in captive portal
   Serial.println("Any button click");
-  if ((InCaptivePortal) || (Calibrating))
+  if (Calibrating)
   {
     ESP.restart();
   }
@@ -751,9 +752,6 @@ void Check_WiFi_Server()
             client.println("------");
             client.println("<br>");
 
-            // Captive portal:
-            client.print("Click <a href=\"/3\">here</a> to launch captive portal to set up WiFi and MQTT endpoint.<br>");
-            client.println("<br>");
             // Suspend:
             client.print("Click <a href=\"/4\">here</a> to suspend the device.<br>");
             client.println("<br>");
@@ -777,12 +775,6 @@ void Check_WiFi_Server()
           currentLine += c; // add it to the end of the currentLine
         }
 
-        // Check to see if the client request was "GET /3" to launch captive portal:
-        if (currentLine.endsWith("GET /3"))
-        {
-          Start_Captive_Portal();
-        }
-
         // Check to see if the client request was "GET /4" to suspend the device:
         if (currentLine.endsWith("GET /4"))
         {
@@ -801,97 +793,6 @@ void Check_WiFi_Server()
     client.stop();
     Serial.println("client disconnected");
   }
-}
-
-void Start_Captive_Portal()
-{ // Run a captive portal to configure WiFi and MQTT
-
-  InCaptivePortal = true;
-
-  tft.fillScreen(TFT_WHITE);
-  tft.setTextColor(TFT_RED, TFT_WHITE);
-  tft.setTextSize(1);
-  tft.setFreeFont(FF90);
-  tft.setTextDatum(MC_DATUM);
-  String wifiAP = "AnaireWiFi_" + anaire_device_id;
-  tft.drawString(wifiAP, tft.width() / 2, tft.height() / 2);
-  wifi_server.stop();
-
-  // Local intialization. Once its business is done, there is no need to keep it around
-  WiFiManager wifiManager;
-  wifiManager.setDebugOutput(true);
-  // wifiManager.setCountry("ES"); // it is not recognizing the country...
-  wifiManager.disconnect();
-  WiFi.mode(WIFI_AP); // explicitly set mode, esp defaults to STA+AP
-
-  // Captive portal parameters
-//  WiFiManagerParameter custom_wifi_html("<p>Set WPA2 Enterprise</p>"); // only custom html
-//  WiFiManagerParameter custom_wifi_user("User", "WPA2 Enterprise user", eepromConfig.wifi_user, 24);
-//  WiFiManagerParameter custom_wifi_password("Password", "WPA2 Enterprise Password", eepromConfig.wifi_password, 24);
-  WiFiManagerParameter custom_mqtt_html("<p>Set MQTT server</p>"); // only custom html
-  WiFiManagerParameter custom_mqtt_server("Server", "MQTT server", eepromConfig.MQTT_server, 24);
-  char port[6];
-  itoa(eepromConfig.MQTT_port, port, 10);
-  WiFiManagerParameter custom_mqtt_port("Port", "MQTT port", port, 6);
-
-  // wifiManager.setSaveParamsCallback(saveParamCallback);
-
-  // Add parameters
-//  wifiManager.addParameter(&custom_wifi_html);
-//  wifiManager.addParameter(&custom_wifi_user);
-//  wifiManager.addParameter(&custom_wifi_password);
-  wifiManager.addParameter(&custom_mqtt_html);
-  wifiManager.addParameter(&custom_mqtt_server);
-  wifiManager.addParameter(&custom_mqtt_port);
-
-  // sets timeout in seconds until configuration portal gets turned off.
-  // If not specified device will remain in configuration mode until
-  // switched off via webserver or device is restarted.
-  wifiManager.setConfigPortalTimeout(60);
-
-  // it starts an access point
-  // and goes into a blocking loop awaiting configuration
-  // wifiManager.resetSettings(); // reset previous configurations
-  bool res = wifiManager.startConfigPortal(wifiAP.c_str());
-  if (!res)
-  {
-    Serial.println("Not able to start captive portal");
-  }
-  else
-  {
-    // if you get here you have connected to the WiFi
-    Serial.println("Captive portal operative");
-  }
-
-  // Save parameters to EEPROM only if any of them changed
-  bool write_eeprom = false;
-
-  if (eepromConfig.MQTT_server != custom_mqtt_server.getValue())
-  {
-    strncpy(eepromConfig.MQTT_server, custom_mqtt_server.getValue(), sizeof(eepromConfig.MQTT_server));
-    eepromConfig.MQTT_server[sizeof(eepromConfig.MQTT_server) - 1] = '\0';
-    write_eeprom = true;
-    Serial.print("MQTT server: ");
-    Serial.println(eepromConfig.MQTT_server);
-  }
-
-  if (eepromConfig.MQTT_port != atoi(custom_mqtt_port.getValue()))
-  {
-    eepromConfig.MQTT_port = atoi(custom_mqtt_port.getValue());
-    write_eeprom = true;
-    Serial.print("MQTT port: ");
-    Serial.println(eepromConfig.MQTT_port);
-  }
-
-  if (write_eeprom)
-  {
-    Write_EEPROM();
-  }
-
-  InCaptivePortal = false;
-
-  // Restart
-  ESP.restart();
 }
 
 void Init_MQTT()
@@ -1587,12 +1488,6 @@ void Button_Init()
     Write_EEPROM();
     delay(5000); // keep the info in the display for 5s
     Update_Display(); });
-
-  // Top button double click: sleep
-  button_top.setDoubleClickHandler([](Button2 &b)
-                                   {
-    Serial.println("Top button double click");
-    Start_Captive_Portal(); });
 
   // Top button triple click: launch captive portal to configure WiFi and MQTT sleep
   button_top.setTripleClickHandler([](Button2 &b)
