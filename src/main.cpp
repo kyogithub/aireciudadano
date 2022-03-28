@@ -19,15 +19,15 @@ struct MyConfigStruct
   char anaire_device_name[24];                   // Device name; default to anaire_device_id
   uint16_t CO2ppm_warning_threshold = 700;       // Warning threshold; default to 700ppm
   uint16_t CO2ppm_alarm_threshold = 1000;        // Alarm threshold; default to 1000ppm
-  char MQTT_server[24] = "mqtt.anaire.org";      // MQTT server url or public IP address. Default to Anaire Portal on portal.anaire.org
-  uint16_t MQTT_port = 80;                       // MQTT port; Default to Anaire Port on 30183
-  boolean acoustic_alarm = true;                 // Global flag to control acoustic alarm; default to true
-  boolean self_calibration = false;              // Automatic Baseline Correction of CO2 sensor; default to false
-  uint16_t forced_recalibration_reference = 420; // Forced Recalibration value; default to 420ppm
-  uint16_t temperature_offset = 600;             // temperature offset for SCD30 CO2 measurements: 600 by default, because of the housing
-  uint16_t altitude_compensation = 600;          // altitude compensation for SCD30 CO2 measurements: 600, Madrid altitude
-  char wifi_user[24];                            // WiFi user to be used on WPA Enterprise. Default to null (not used)
-  char wifi_password[24];                        // WiFi password to be used on WPA Enterprise. Default to null (not used)
+//  char MQTT_server[24] = "mqtt.anaire.org";      // MQTT server url or public IP address. Default to Anaire Portal on portal.anaire.org
+//  uint16_t MQTT_port = 80;                       // MQTT port; Default to Anaire Port on 30183
+//  boolean acoustic_alarm = true;                 // Global flag to control acoustic alarm; default to true
+//  boolean self_calibration = false;              // Automatic Baseline Correction of CO2 sensor; default to false
+//  uint16_t forced_recalibration_reference = 420; // Forced Recalibration value; default to 420ppm
+//  uint16_t temperature_offset = 600;             // temperature offset for SCD30 CO2 measurements: 600 by default, because of the housing
+//  uint16_t altitude_compensation = 600;          // altitude compensation for SCD30 CO2 measurements: 600, Madrid altitude
+//  char wifi_user[24];                            // WiFi user to be used on WPA Enterprise. Default to null (not used)
+//  char wifi_password[24];                        // WiFi password to be used on WPA Enterprise. Default to null (not used)
 } eepromConfig;
 
 // to store data on nvs partition
@@ -64,8 +64,8 @@ co2_status co2_device_status = co2_ok; // initialized to ok
 
 // device status
 boolean err_global = false;
-boolean err_wifi = false;
-boolean err_MQTT = false;
+//boolean err_wifi = false;
+//boolean err_MQTT = false;
 boolean err_sensor = false;
 
 // Measurements loop: time between measurements
@@ -73,9 +73,9 @@ unsigned int measurements_loop_duration = 1000; // 10 seconds
 unsigned long measurements_loop_start;          // holds a timestamp for each control loop start
 
 // MQTT loop: time between MQTT measurements sent to the cloud
-unsigned int MQTT_loop_duration = 60000; // 60 seconds
-unsigned long MQTT_loop_start;           // holds a timestamp for each cloud loop start
-unsigned long lastReconnectAttempt = 0;  // MQTT reconnections
+//unsigned int MQTT_loop_duration = 60000; // 60 seconds
+//unsigned long MQTT_loop_start;           // holds a timestamp for each cloud loop start
+//unsigned long lastReconnectAttempt = 0;  // MQTT reconnections
 
 // Errors loop: time between error condition recovery
 unsigned int errors_loop_duration = 60000; // 60 seconds
@@ -1415,10 +1415,10 @@ void Update_Display()
   {
     tft.fillScreen(TFT_YELLOW);
     tft.setTextColor(TFT_RED, TFT_YELLOW);
-    if (eepromConfig.acoustic_alarm)
-    {
+//    if (eepromConfig.acoustic_alarm)
+//    {
 //      digitalWrite(BUZZER_GPIO, HIGH);
-    }
+//    }
     delay(50);
 //    digitalWrite(BUZZER_GPIO, LOW);
 //    displayWifi(TFT_RED, TFT_YELLOW, (WiFi.status() == WL_CONNECTED));
@@ -1430,10 +1430,10 @@ void Update_Display()
   {
     tft.fillScreen(TFT_RED);
     tft.setTextColor(TFT_WHITE, TFT_RED);
-    if (eepromConfig.acoustic_alarm)
-    {
+//    if (eepromConfig.acoustic_alarm)
+//    {
 //      digitalWrite(BUZZER_GPIO, HIGH);
-    }
+//    }
     delay(250);
 //    digitalWrite(BUZZER_GPIO, LOW);
 //    displayWifi(TFT_WHITE, TFT_RED, (WiFi.status() == WL_CONNECTED));
