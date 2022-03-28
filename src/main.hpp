@@ -8,7 +8,7 @@ void Connect_WiFi();
 void Init_MQTT();
 void Setup_Sensor();
 void Update_Display();
-void Read_Sensor();
+void Read_PM25();
 void Evaluate_CO2_Value();
 void Update_Display();
 void Send_Message_Cloud_App_MQTT();

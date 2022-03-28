@@ -16,18 +16,18 @@ String anaire_device_id;
 // Init to default values; if they have been chaged they will be readed later, on initialization
 struct MyConfigStruct
 {
-  char anaire_device_name[24];                   // Device name; default to anaire_device_id
-  uint16_t CO2ppm_warning_threshold = 700;       // Warning threshold; default to 700ppm
-  uint16_t CO2ppm_alarm_threshold = 1000;        // Alarm threshold; default to 1000ppm
-//  char MQTT_server[24] = "mqtt.anaire.org";      // MQTT server url or public IP address. Default to Anaire Portal on portal.anaire.org
-//  uint16_t MQTT_port = 80;                       // MQTT port; Default to Anaire Port on 30183
-//  boolean acoustic_alarm = true;                 // Global flag to control acoustic alarm; default to true
-//  boolean self_calibration = false;              // Automatic Baseline Correction of CO2 sensor; default to false
-//  uint16_t forced_recalibration_reference = 420; // Forced Recalibration value; default to 420ppm
-//  uint16_t temperature_offset = 600;             // temperature offset for SCD30 CO2 measurements: 600 by default, because of the housing
-//  uint16_t altitude_compensation = 600;          // altitude compensation for SCD30 CO2 measurements: 600, Madrid altitude
-//  char wifi_user[24];                            // WiFi user to be used on WPA Enterprise. Default to null (not used)
-//  char wifi_password[24];                        // WiFi password to be used on WPA Enterprise. Default to null (not used)
+  char anaire_device_name[24];             // Device name; default to anaire_device_id
+  uint16_t CO2ppm_warning_threshold = 700; // Warning threshold; default to 700ppm
+  uint16_t CO2ppm_alarm_threshold = 1000;  // Alarm threshold; default to 1000ppm
+  //  char MQTT_server[24] = "mqtt.anaire.org";      // MQTT server url or public IP address. Default to Anaire Portal on portal.anaire.org
+  //  uint16_t MQTT_port = 80;                       // MQTT port; Default to Anaire Port on 30183
+  //  boolean acoustic_alarm = true;                 // Global flag to control acoustic alarm; default to true
+  //  boolean self_calibration = false;              // Automatic Baseline Correction of CO2 sensor; default to false
+  //  uint16_t forced_recalibration_reference = 420; // Forced Recalibration value; default to 420ppm
+  //  uint16_t temperature_offset = 600;             // temperature offset for SCD30 CO2 measurements: 600 by default, because of the housing
+  //  uint16_t altitude_compensation = 600;          // altitude compensation for SCD30 CO2 measurements: 600, Madrid altitude
+  //  char wifi_user[24];                            // WiFi user to be used on WPA Enterprise. Default to null (not used)
+  //  char wifi_password[24];                        // WiFi password to be used on WPA Enterprise. Default to null (not used)
 } eepromConfig;
 
 // to store data on nvs partition
@@ -40,6 +40,7 @@ float CO2ppm_value = 0; // CO2 ppm measured value
 // int CO2ppm_accumulated = 0; // Accumulates co2 measurements for a MQTT period
 float CO2ppm_accumulated = 0; // Accumulates co2 measurements for a MQTT period
 int CO2ppm_samples = 0;       // Counts de number of samples for a MQTT period
+int PM25int = 0;
 float temperature;            // Read temperature as Celsius
 float humidity;               // Read humidity in %
 int temp;
@@ -64,18 +65,20 @@ co2_status co2_device_status = co2_ok; // initialized to ok
 
 // device status
 boolean err_global = false;
-//boolean err_wifi = false;
-//boolean err_MQTT = false;
+// boolean err_wifi = false;
+// boolean err_MQTT = false;
 boolean err_sensor = false;
 
 // Measurements loop: time between measurements
-unsigned int measurements_loop_duration = 1000; // 10 seconds
+unsigned int measurements_loop_duration = 1000; // 1 second
 unsigned long measurements_loop_start;          // holds a timestamp for each control loop start
+unsigned int Bluetooth_loop_times = 30;          // 5 seconds
+unsigned int Con_loop_times = 0;
 
 // MQTT loop: time between MQTT measurements sent to the cloud
-//unsigned int MQTT_loop_duration = 60000; // 60 seconds
-//unsigned long MQTT_loop_start;           // holds a timestamp for each cloud loop start
-//unsigned long lastReconnectAttempt = 0;  // MQTT reconnections
+// unsigned int MQTT_loop_duration = 60000; // 60 seconds
+// unsigned long MQTT_loop_start;           // holds a timestamp for each cloud loop start
+// unsigned long lastReconnectAttempt = 0;  // MQTT reconnections
 
 // Errors loop: time between error condition recovery
 unsigned int errors_loop_duration = 60000; // 60 seconds
@@ -126,8 +129,8 @@ SPS30 sps30;
 #define SP30_COMMS Wire
 #define DEBUG 0
 bool SPS30flag = false;
-#define I2C_SDA_pin 21                      // Define the SDA pin used for the SCD30
-#define I2C_SCL_pin 22                      // Define the SCL pin used for the SCD30
+#define I2C_SDA_pin 21 // Define the SDA pin used for the SCD30
+#define I2C_SCL_pin 22 // Define the SCL pin used for the SCD30
 
 // Plantower PMS
 #include "PMS.h"
@@ -158,34 +161,34 @@ bool bluetooth_active = false;
 
 // WiFi
 //#include <WiFi.h>
-//#include <esp_wifi.h>  
+//#include <esp_wifi.h>
 //#include <WiFiManager.h>                // https://github.com/tzapu/WiFiManager
 //#include "esp_wpa2.h"                   //wpa2 library for connections to Enterprise networks
-//const int WIFI_CONNECT_TIMEOUT = 10000; // 10 seconds
-//WiFiServer wifi_server(80);
-//WiFiClient wifi_client;
+// const int WIFI_CONNECT_TIMEOUT = 10000; // 10 seconds
+// WiFiServer wifi_server(80);
+// WiFiClient wifi_client;
 
 // MQTT
 //#include <PubSubClient.h>
-//char MQTT_message[256];
-//PubSubClient MQTT_client(wifi_client);
-//char received_payload[384];
-//String MQTT_send_topic;
-//String MQTT_receive_topic;
+// char MQTT_message[256];
+// PubSubClient MQTT_client(wifi_client);
+// char received_payload[384];
+// String MQTT_send_topic;
+// String MQTT_receive_topic;
 
 // JSON
 //#include <ArduinoJson.h>
-//StaticJsonDocument<384> jsonBuffer;
+// StaticJsonDocument<384> jsonBuffer;
 
 // OTA Update
 //#include <HTTPClient.h>
 //#include <HTTPUpdate.h>
 
 // to know when there is an updating process in place
-//bool updating = false;
+// bool updating = false;
 
 // To know when the device is in the following states
-//bool InCaptivePortal = false;
+// bool InCaptivePortal = false;
 bool Calibrating = false;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,8 +220,8 @@ void setup()
   Get_Anaire_DeviceId();
 
   // Set MQTT topics
-//  MQTT_send_topic = "measurement";                   // Measurements are sent to this topic
-//  MQTT_receive_topic = "config/" + anaire_device_id; // Config messages will be received in config/id
+  //  MQTT_send_topic = "measurement";                   // Measurements are sent to this topic
+  //  MQTT_receive_topic = "config/" + anaire_device_id; // Config messages will be received in config/id
 
   // Read EEPROM config values
   // Wipe_EEPROM();
@@ -236,20 +239,19 @@ void setup()
   Button_Init();
 
   // Attempt to connect to WiFi network:
-//  Connect_WiFi();
+  //  Connect_WiFi();
 
   // Attempt to connect to MQTT broker
-//  if (!err_wifi)
-//  {
-//    Init_MQTT();
-//  }
+  //  if (!err_wifi)
+  //  {
+  //    Init_MQTT();
+  //  }
 
   // Initialize and warm up CO2 sensor
   Setup_Sensor();
 
   // Init control loops
   measurements_loop_start = millis();
-//  MQTT_loop_start = millis();
   errors_loop_start = millis();
 
   Serial.println("### ANAIRE PiCO2 DEVICE SETUP FINISHED ###\n");
@@ -275,13 +277,13 @@ void loop()
   // Serial.println ("--- LOOP BEGIN ---");
 
   // If a firmware update is in progress do not do anything else
-//  if (updating)
-//  {
-//    return;
-//  }
+  //  if (updating)
+  //  {
+  //    return;
+  //  }
 
   // Measure the battery voltage
-  battery_voltage = ((float)analogRead(ADC_PIN)/4095.0)*2.0*3.3*(vref/1000.0);
+  battery_voltage = ((float)analogRead(ADC_PIN) / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
 
   // Measurement loop
   if ((millis() - measurements_loop_start) >= measurements_loop_duration)
@@ -291,9 +293,9 @@ void loop()
     measurements_loop_start = millis();
 
     // Read sensors
-    Read_Sensor();
+    Read_PM25();
 
-    if (CO2ppm_value > 0) // REVISAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (CO2ppm_value >= 0) // REVISAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     {
 
       // Evaluate CO2 value
@@ -302,34 +304,50 @@ void loop()
       // Update display with new values
       Update_Display();
 
-// Update bluetooth app with new values
-#if BLUETOOTH
-      Write_Bluetooth();
-#endif
+      // Update bluetooth app with new values
 
       // Accumulates samples
       CO2ppm_accumulated += CO2ppm_value;
       CO2ppm_samples++;
+      Con_loop_times++;
+    }
+
+    // Bluettoh loop
+    if (Con_loop_times >= Bluetooth_loop_times)
+    {
+      float PM25f;
+      Serial.println(CO2ppm_accumulated);
+      Serial.println(CO2ppm_samples);
+      PM25f = CO2ppm_accumulated / CO2ppm_samples;
+      PM25int = round(PM25f);
+      Serial.println(PM25int);
+      ReadHyT();
+#if BLUETOOTH
+      Write_Bluetooth();
+#endif
+      CO2ppm_accumulated = 0.0;
+      CO2ppm_samples = 0.0;
+      Con_loop_times = 0;
     }
   }
 
   // MQTT loop
-//  if ((millis() - MQTT_loop_start) >= MQTT_loop_duration)
-//  {
+  //  if ((millis() - MQTT_loop_start) >= MQTT_loop_duration)
+  //  {
 
-    // New timestamp for the loop start time
-//    MQTT_loop_start = millis();
+  // New timestamp for the loop start time
+  //    MQTT_loop_start = millis();
 
-    // Message the MQTT broker in the cloud app to send the measured values
-//    if ((!err_wifi) && (CO2ppm_samples > 0))
-//    {
-//      Send_Message_Cloud_App_MQTT();
-//    }
+  // Message the MQTT broker in the cloud app to send the measured values
+  //    if ((!err_wifi) && (CO2ppm_samples > 0))
+  //    {
+  //      Send_Message_Cloud_App_MQTT();
+  //    }
 
-    // Reset samples after sending them to the MQTT server
-//    CO2ppm_accumulated = 0.0;
-    CO2ppm_samples = 0.0;
-//  }
+  // Reset samples after sending them to the MQTT server
+  //    CO2ppm_accumulated = 0.0;
+  //    CO2ppm_samples = 0.0;
+  //  }
 
   // Errors loop
   if ((millis() - errors_loop_start) >= errors_loop_duration)
@@ -342,46 +360,46 @@ void loop()
     if (err_sensor)
     {
       Serial.println("--- err_sensor");
-      // Setup_Sensor();  // Init co2 sensors
+      Setup_Sensor(); // Init co2 sensors
     }
 
-//    if (WiFi.status() != WL_CONNECTED)
-//    {
-//      Serial.println("--- err_wifi");
-//      err_wifi = true;
-//      WiFi.reconnect();
-//    }
-//    else
-//    {
-//      err_wifi = false;
-//    }
+    //    if (WiFi.status() != WL_CONNECTED)
+    //    {
+    //      Serial.println("--- err_wifi");
+    //      err_wifi = true;
+    //      WiFi.reconnect();
+    //    }
+    //    else
+    //    {
+    //      err_wifi = false;
+    //    }
 
     // Reconnect MQTT if needed
-//    if ((!MQTT_client.connected()) && (!err_wifi))
-//    {
-//      Serial.println("--- err_mqtt");
-//      err_MQTT = true;
-//    }
+    //    if ((!MQTT_client.connected()) && (!err_wifi))
+    //    {
+    //      Serial.println("--- err_mqtt");
+    //      err_MQTT = true;
+    //    }
 
     // Reconnect MQTT if needed
-//    if ((err_MQTT) && (!err_wifi))
-//    {
-//      Serial.println("--- MQTT reconnect");
-      // Attempt to connect to MQTT broker
-//      MQTT_Reconnect();
-//      Init_MQTT();
-//    }
+    //    if ((err_MQTT) && (!err_wifi))
+    //    {
+    //      Serial.println("--- MQTT reconnect");
+    // Attempt to connect to MQTT broker
+    //      MQTT_Reconnect();
+    //      Init_MQTT();
+    //    }
   }
 
-  // From here, all other tasks performed outside of measurements, MQTT and error loops
+// From here, all other tasks performed outside of measurements, MQTT and error loops
 
-  // if not there are not connectivity errors, receive MQTT messages
+// if not there are not connectivity errors, receive MQTT messages
 //  if ((!err_MQTT) && (!err_wifi))
 //  {
 //    MQTT_client.loop();
 //  }
 
-  // Process wifi server requests
+// Process wifi server requests
 //  Check_WiFi_Server();
 
 // Process bluetooth events
@@ -954,7 +972,7 @@ void Setup_Sensor()
     Serial.println("none");
 }
 
-void Read_Sensor()
+void Read_PM25()
 { // Read CO2, temperature and humidity values
 
   // If there is any other CO2 sensor insert code from here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -994,23 +1012,6 @@ void Read_Sensor()
       header = false;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-
-      temperature = sht31.readTemperature();
-      humidity = sht31.readHumidity();
-
-      if (! isnan(temperature)) {  // check if 'is not a number'
-        Serial.print("Temp *C = "); Serial.print(temperature); Serial.print("\t\t");
-      } else {
-        Serial.println("Failed to read temperature");
-      }
-
-      if (! isnan(humidity)) {  // check if 'is not a number'
-        Serial.print("Hum. % = "); Serial.println(humidity);
-      } else {
-        Serial.println("Failed to read humidity");
-      }
-
     CO2ppm_value = val.MassPM2;
 
     if (!err_sensor)
@@ -1021,7 +1022,7 @@ void Read_Sensor()
       Serial.print(" ug/m3   ");
     }
   }
-  
+
   if (PMSflag == true)
   {
     while (Serial1.available())
@@ -1243,24 +1244,24 @@ void Print_Config()
   Serial.println(eepromConfig.CO2ppm_warning_threshold);
   Serial.print("CO2ppm Alarm threshold: ");
   Serial.println(eepromConfig.CO2ppm_alarm_threshold);
-//  Serial.print("MQTT server: ");
-//  Serial.println(eepromConfig.MQTT_server);
-//  Serial.print("MQTT Port: ");
-//  Serial.println(eepromConfig.MQTT_port);
-//  Serial.print("Acoustic Alarm: ");
-//  Serial.println(eepromConfig.acoustic_alarm);
-//  Serial.print("Self Calibration: ");
-//  Serial.println(eepromConfig.self_calibration);
-//  Serial.print("Forced Recalibration Reference: ");
-//  Serial.println(eepromConfig.forced_recalibration_reference);
-//  Serial.print("Temperature Offset: ");
-//  Serial.println(eepromConfig.temperature_offset);
-//  Serial.print("Altitude Compensation: ");
-//  Serial.println(eepromConfig.altitude_compensation);
-//  Serial.print("WiFi user: ");
-//  Serial.println(eepromConfig.wifi_user);
-//  Serial.print("WiFi user's password: ");
-//  Serial.println(eepromConfig.wifi_password);
+  //  Serial.print("MQTT server: ");
+  //  Serial.println(eepromConfig.MQTT_server);
+  //  Serial.print("MQTT Port: ");
+  //  Serial.println(eepromConfig.MQTT_port);
+  //  Serial.print("Acoustic Alarm: ");
+  //  Serial.println(eepromConfig.acoustic_alarm);
+  //  Serial.print("Self Calibration: ");
+  //  Serial.println(eepromConfig.self_calibration);
+  //  Serial.print("Forced Recalibration Reference: ");
+  //  Serial.println(eepromConfig.forced_recalibration_reference);
+  //  Serial.print("Temperature Offset: ");
+  //  Serial.println(eepromConfig.temperature_offset);
+  //  Serial.print("Altitude Compensation: ");
+  //  Serial.println(eepromConfig.altitude_compensation);
+  //  Serial.print("WiFi user: ");
+  //  Serial.println(eepromConfig.wifi_user);
+  //  Serial.print("WiFi user's password: ");
+  //  Serial.println(eepromConfig.wifi_password);
   Serial.println("#######################################");
 }
 
@@ -1381,7 +1382,6 @@ void Button_Init()
     tft.drawString("REINICIO", tft.width()/2, tft.height()/2);
     delay(1000);
     ESP.restart(); });
-
 }
 
 void Display_Init()
@@ -1405,9 +1405,9 @@ void Update_Display()
   {
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
-//    digitalWrite(BUZZER_GPIO, LOW);
-//    displayWifi(TFT_GREEN, TFT_BLACK, (WiFi.status() == WL_CONNECTED));
-//    displayBuzzer(TFT_GREEN, eepromConfig.acoustic_alarm);
+    //    digitalWrite(BUZZER_GPIO, LOW);
+    //    displayWifi(TFT_GREEN, TFT_BLACK, (WiFi.status() == WL_CONNECTED));
+    //    displayBuzzer(TFT_GREEN, eepromConfig.acoustic_alarm);
     displayBatteryLevel(TFT_GREEN);
   }
 
@@ -1415,14 +1415,14 @@ void Update_Display()
   {
     tft.fillScreen(TFT_YELLOW);
     tft.setTextColor(TFT_RED, TFT_YELLOW);
-//    if (eepromConfig.acoustic_alarm)
-//    {
-//      digitalWrite(BUZZER_GPIO, HIGH);
-//    }
+    //    if (eepromConfig.acoustic_alarm)
+    //    {
+    //      digitalWrite(BUZZER_GPIO, HIGH);
+    //    }
     delay(50);
-//    digitalWrite(BUZZER_GPIO, LOW);
-//    displayWifi(TFT_RED, TFT_YELLOW, (WiFi.status() == WL_CONNECTED));
-//    displayBuzzer(TFT_RED, eepromConfig.acoustic_alarm);
+    //    digitalWrite(BUZZER_GPIO, LOW);
+    //    displayWifi(TFT_RED, TFT_YELLOW, (WiFi.status() == WL_CONNECTED));
+    //    displayBuzzer(TFT_RED, eepromConfig.acoustic_alarm);
     displayBatteryLevel(TFT_RED);
   }
 
@@ -1430,14 +1430,14 @@ void Update_Display()
   {
     tft.fillScreen(TFT_RED);
     tft.setTextColor(TFT_WHITE, TFT_RED);
-//    if (eepromConfig.acoustic_alarm)
-//    {
-//      digitalWrite(BUZZER_GPIO, HIGH);
-//    }
+    //    if (eepromConfig.acoustic_alarm)
+    //    {
+    //      digitalWrite(BUZZER_GPIO, HIGH);
+    //    }
     delay(250);
-//    digitalWrite(BUZZER_GPIO, LOW);
-//    displayWifi(TFT_WHITE, TFT_RED, (WiFi.status() == WL_CONNECTED));
-//    displayBuzzer(TFT_WHITE, eepromConfig.acoustic_alarm);
+    //    digitalWrite(BUZZER_GPIO, LOW);
+    //    displayWifi(TFT_WHITE, TFT_RED, (WiFi.status() == WL_CONNECTED));
+    //    displayBuzzer(TFT_WHITE, eepromConfig.acoustic_alarm);
     displayBatteryLevel(TFT_WHITE);
   }
 
@@ -1449,7 +1449,7 @@ void Update_Display()
   // Draw CO2 units
   tft.setTextSize(1);
   tft.setFreeFont(FF90);
-  tft.drawString("PPM", 200, 115);
+  tft.drawString("ug/m3", 190, 70);
 
   // Draw temperature
   tft.drawString(String(temperature, 1) + "C", 80, 115);
@@ -1459,10 +1459,9 @@ void Update_Display()
 
   // Draw bluetooth device id
 #if BLUETOOTH
-    tft.setTextDatum(8); // bottom right
-    tft.drawString(gadgetBle.getDeviceIdString(), 230, 125);
+//  tft.setTextDatum(8); // bottom right
+  tft.drawString(gadgetBle.getDeviceIdString(), 200, 115);
 #endif
-
 }
 
 void Get_Anaire_DeviceId()
@@ -1532,8 +1531,8 @@ void displayBatteryLevel(int colour)
   // Measure the battery voltage
   battery_voltage = ((float)analogRead(ADC_PIN) / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
 
-    Serial.print("battery voltage: ");
-    Serial.println(battery_voltage);
+  Serial.print("battery voltage: ");
+  Serial.println(battery_voltage);
 
   // If battery voltage is up 4.5 then external power supply is working and battery is charging
   if (battery_voltage > USB_Voltage)
@@ -1646,9 +1645,10 @@ void Suspend_Device()
 #if BLUETOOTH
 void Write_Bluetooth()
 { // Write measurements to bluetooth
-  gadgetBle.writeCO2(round(CO2ppm_value));
-  gadgetBle.writeTemperature(temperature);
-  gadgetBle.writeHumidity(humidity);
+  gadgetBle.writeCO2(round(PM25int));
+  gadgetBle.writeTemperature(temp);
+  gadgetBle.writeHumidity(humi);
+  Serial.println("Bluetooth frame sent: PM25, humidity and temperature");
   gadgetBle.commit();
 }
 #endif
