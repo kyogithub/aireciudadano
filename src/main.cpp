@@ -120,7 +120,7 @@ int vref = 1100;
 #define Voltage_Threshold_4 3.3
 
 // Sensors
-
+// SPS30
 #include <sps30.h>
 SPS30 sps30;
 #define SP30_COMMS Wire
@@ -129,6 +129,7 @@ bool SPS30flag = false;
 #define I2C_SDA_pin 21                      // Define the SDA pin used for the SCD30
 #define I2C_SCL_pin 22                      // Define the SCL pin used for the SCD30
 
+// Plantower PMS
 #include "PMS.h"
 PMS pms(Serial1);
 PMS::DATA data;
@@ -136,13 +137,13 @@ bool PMSflag = false;
 #define PMS_TX 17 // PMS TX pin
 #define PMS_RX 15 // PMS RX pin
 
+// Sensirion SHT31
 #include <Adafruit_SHT31.h>
 Adafruit_SHT31 sht31;
 bool SHT31flag = false;
 byte failh = 0;
 
-// Adafruit_SHT31 sht31 = Adafruit_SHT31();
-
+// AM2320
 #include "Adafruit_Sensor.h"
 #include "Adafruit_AM2320.h"
 Adafruit_AM2320 am2320 = Adafruit_AM2320();
