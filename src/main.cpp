@@ -122,6 +122,8 @@ int vref = 1100;
 #define Voltage_Threshold_3 3.5
 #define Voltage_Threshold_4 3.3
 
+#define OUT_EN 26
+
 // Sensors
 // SPS30
 #include <sps30.h>
@@ -204,6 +206,13 @@ void setup()
     delay(500); // wait 0.5 seconds for connection
   }
   Serial.setDebugOutput(true);
+
+  // Out for power on and off sensors
+  pinMode(OUT_EN, OUTPUT);
+  // On sensors
+  digitalWrite(OUT_EN, HIGH);  // step-up on
+  delay(3000); 
+
 
   // print info
   Serial.println();
@@ -1288,8 +1297,8 @@ void Button_Init()
   //   - Bottom button triple click: enables auto self calibration
 
   // Long clicks: keep pressing more than 1 second
-  button_top.setLongClickTime(1000);
-  button_bottom.setLongClickTime(1000);
+  button_top.setLongClickTime(3000);
+  button_bottom.setLongClickTime(1500);
 
   // If any button is pressed run the following function. Intended to interrupt calibration or captive portal and restart the device. Not yet implemented.
   button_top.setTapHandler(Interrupt_Restart);
@@ -1325,36 +1334,14 @@ void Button_Init()
     delay(5000); // keep the info in the display for 5s
     Update_Display(); });
 
-  // Top button long click: toggle acoustic alarm
-  button_top.setLongClickDetectedHandler([](Button2 &b)
-                                         {
-    Serial.println("Top button long click");
-    tft.fillScreen(TFT_WHITE);
-    tft.setTextColor(TFT_RED, TFT_WHITE);
-    tft.setTextSize(1);
-    tft.setFreeFont(FF90);
-    tft.setTextDatum(MC_DATUM);
-//    if (eepromConfig.acoustic_alarm) {
-//      eepromConfig.acoustic_alarm = false;
-//      tft.drawString("ALARMA: NO", tft.width()/2, tft.height()/2);
-//    }
-//    else {
-//      eepromConfig.acoustic_alarm = true;
-//      tft.drawString("ALARMA: SI", tft.width()/2, tft.height()/2);
-//    }
-    Write_EEPROM();
-    delay(5000); // keep the info in the display for 5s
-    Update_Display(); });
+// Top button long click: off
+  button_top.setLongClickDetectedHandler([](Button2 &b) {
+    Serial.println("Top button long click - Off sensor");
+    Suspend_Device();
+    });
 
-  // Top button triple click: launch captive portal to configure WiFi and MQTT sleep
-  button_top.setTripleClickHandler([](Button2 &b)
-                                   {
-    Serial.println("Top button triple click");
-    Suspend_Device(); });
-
-  // Bottom button short click: show buttons info
-  button_bottom.setClickHandler([](Button2 &b)
-                                {
+// Bottom button short click: show buttons info
+  button_bottom.setClickHandler([](Button2 & b) {
     Serial.println("Bottom button short click");
     tft.fillScreen(TFT_WHITE);
     tft.setTextColor(TFT_BLACK, TFT_WHITE);
@@ -1370,12 +1357,13 @@ void Button_Init()
     tft.drawString("  Doble: Reiniciar", 10, 101);
 //    tft.drawString("  Triple: Autocalibración", 10, 117);
     delay(5000);
-    Update_Display(); });
+    Update_Display();
+    });
 
   // Bottom button double click: restart
-  button_bottom.setDoubleClickHandler([](Button2 &b)
+  button_bottom.setLongClickDetectedHandler([](Button2 &b)
                                       {
-    Serial.println("Bottom button double click");
+    Serial.println("Bottom long click");
     tft.fillScreen(TFT_WHITE);
     tft.setTextColor(TFT_RED, TFT_WHITE);
     tft.setTextSize(1);
@@ -1628,9 +1616,11 @@ void Suspend_Device()
   tft.setTextDatum(MC_DATUM);
   tft.drawString(" Presione un boton para despertar", tft.width() / 2, tft.height() / 2);
   espDelay(3000);
-  // digitalWrite(TFT_BL, !r);
   tft.writecommand(TFT_DISPOFF);
   tft.writecommand(TFT_SLPIN);
+
+  // Off sensors
+  digitalWrite(OUT_EN, LOW);  // step-up off
 
   // After using light sleep, you need to disable timer wake, because here use external IO port to wake up
   esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TIMER);
