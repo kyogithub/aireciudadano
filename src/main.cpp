@@ -178,11 +178,11 @@ String MQTT_receive_topic;
 StaticJsonDocument<384> jsonBuffer;
 
 // OTA Update
-#include <HTTPClient.h>
-#include <HTTPUpdate.h>
+//#include <HTTPClient.h>
+//#include <HTTPUpdate.h>
 
 // to know when there is an updating process in place
-bool updating = false;
+//bool updating = false;
 
 // To know when the device is in the following states
 //bool InCaptivePortal = false;
@@ -275,10 +275,10 @@ void loop()
   // Serial.println ("--- LOOP BEGIN ---");
 
   // If a firmware update is in progress do not do anything else
-  if (updating)
-  {
-    return;
-  }
+//  if (updating)
+//  {
+//    return;
+//  }
 
   // Measure the battery voltage
   battery_voltage = ((float)analogRead(ADC_PIN)/4095.0)*2.0*3.3*(vref/1000.0);
@@ -382,7 +382,7 @@ void loop()
   }
 
   // Process wifi server requests
-  Check_WiFi_Server();
+//  Check_WiFi_Server();
 
 // Process bluetooth events
 #if BLUETOOTH
@@ -647,155 +647,6 @@ void Print_WiFi_Status()
   */
 }
 
-void Check_WiFi_Server()
-{                                              // Wifi server
-  WiFiClient client = wifi_server.available(); // listen for incoming clients
-  if (client)
-  {                               // if you get a client,
-    Serial.println("new client"); // print a message out the serial port
-    String currentLine = "";      // make a String to hold incoming data from the client
-    while (client.connected())
-    { // loop while the client's connected
-      if (client.available())
-      {                         // if there's bytes to read from the client,
-        char c = client.read(); // read a byte, then
-        Serial.write(c);        // print it out the serial monitor
-        if (c == '\n')
-        { // if the byte is a newline character
-
-          // if the current line is blank, you got two newline characters in a row.
-          // that's the end of the client HTTP request, so send a response:
-          if (currentLine.length() == 0)
-          {
-            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
-            // and a content-type so the client knows what's coming, then a blank line:
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-            // Print current info
-            client.print("ANAIRE PiCO2 DEVICE");
-            client.println("<br>");
-            client.print("SW version: ");
-            client.print(sw_version);
-            client.println("<br>");
-            client.println("------");
-            client.println("<br>");
-            client.print("Anaire Device ID: ");
-            client.print(anaire_device_id);
-            client.println("<br>");
-            client.print("Anaire Device name: ");
-            client.print(eepromConfig.anaire_device_name);
-            client.println("<br>");
-            client.print("SSID: ");
-            client.print(String(WiFi.SSID()));
-            client.println("<br>");
-            client.print("IP Adress: ");
-            client.print(WiFi.localIP());
-            client.println("<br>");
-            client.print("MAC Adress: ");
-            client.print(WiFi.macAddress());
-            client.println("<br>");
-            client.print("RSSI: ");
-            client.print(WiFi.RSSI());
-            client.println("<br>");
-            client.println("------");
-            client.println("<br>");
-            client.print("CO2ppm_warning_threshold: ");
-            client.print(eepromConfig.CO2ppm_warning_threshold);
-            client.println("<br>");
-            client.print("CO2ppm_alarm_threshold: ");
-            client.print(eepromConfig.CO2ppm_alarm_threshold);
-            client.println("<br>");
-            client.print("MQTT Server: ");
-            client.print(eepromConfig.MQTT_server);
-            client.println("<br>");
-            client.print("MQTT Port: ");
-            client.print(eepromConfig.MQTT_port);
-            client.println("<br>");
-            client.print("Alarm: ");
-            client.print(eepromConfig.acoustic_alarm);
-            client.println("<br>");
-            client.println("------");
-            client.println("<br>");
-            if (co2_sensor == scd30_sensor)
-            {
-              client.print("PM25 Sensor");
-              client.println("<br>");
-              client.print("Measurement Interval: ");
-              client.print(measurements_loop_duration / 1000);
-              client.println("<br>");
-            }
-            client.println("------");
-            client.println("<br>");
-            client.print("PM25: ");
-            client.print(CO2ppm_value);
-            client.println("<br>");
-            client.print("Temperature: ");
-            client.print(temp);
-            client.println("<br>");
-            client.print("Humidity: ");
-            client.print(humi);
-            client.println("<br>");
-            client.print("PM2.5 STATUS: ");
-            switch (co2_device_status)
-            {
-            case co2_ok:
-              client.print("OK");
-              break;
-            case co2_warning:
-              client.print("WARNING");
-              break;
-            case co2_alarm:
-              client.print("ALARM");
-              break;
-            }
-            client.println("<br>");
-            client.println("------");
-            client.println("<br>");
-
-            // Suspend:
-            client.print("Click <a href=\"/4\">here</a> to suspend the device.<br>");
-            client.println("<br>");
-            // Restart:
-            client.print("Click <a href=\"/5\">here</a> to restart the device.<br>");
-            client.println("<br>");
-
-            // The HTTP response ends with another blank line:
-            client.println();
-
-            // break out of the while loop:
-            break;
-          }
-          else
-          { // if you got a newline, then clear currentLine:
-            currentLine = "";
-          }
-        }
-        else if (c != '\r')
-        {                   // if you got anything else but a carriage return character,
-          currentLine += c; // add it to the end of the currentLine
-        }
-
-        // Check to see if the client request was "GET /4" to suspend the device:
-        if (currentLine.endsWith("GET /4"))
-        {
-          Suspend_Device();
-        }
-
-        // Check to see if the client request was "GET /5" to restart the device:
-        if (currentLine.endsWith("GET /5"))
-        {
-          ESP.restart();
-        }
-      }
-    }
-
-    // close the connection:
-    client.stop();
-    Serial.println("client disconnected");
-  }
-}
-
 void Init_MQTT()
 { // MQTT Init function
   Serial.print("Attempting to connect to the MQTT broker ");
@@ -1007,8 +858,8 @@ void Receive_Message_Cloud_App_MQTT(char *topic, byte *payload, unsigned int len
     // }
 
     // Update firmware to latest bin
-    Serial.println("Update firmware to latest bin");
-    Firmware_Update();
+//    Serial.println("Update firmware to latest bin");
+//    Firmware_Update();
   }
 }
 
@@ -1670,52 +1521,6 @@ void Wipe_EEPROM()
   else
   {
     Serial.println("EEPROM data could not be wiped from flash store");
-  }
-}
-
-void Firmware_Update()
-{
-
-  Serial.println("### FIRMWARE UPDATE ###");
-
-  // For remote firmware update
-  WiFiClientSecure UpdateClient;
-  UpdateClient.setInsecure();
-
-  // Reading data over SSL may be slow, use an adequate timeout
-  UpdateClient.setTimeout(30); // timeout argument is defined in seconds for setTimeout
-
-  // Update display
-  tft.fillScreen(TFT_ORANGE);
-  tft.setTextColor(TFT_BLACK, TFT_ORANGE);
-  tft.setTextSize(1);
-  tft.setFreeFont(FF90);
-  tft.setTextDatum(MC_DATUM);
-  tft.drawString("ACTUALIZACION EN CURSO", tft.width() / 2, tft.height() / 2);
-
-  // t_httpUpdate_return ret = httpUpdate.update(UpdateClient, "https://raw.githubusercontent.com/anaireorg/anaire-devices/main/src/anaire.PiCO2/anaire.PiCO2.ino.esp32.bin");
-  t_httpUpdate_return ret = httpUpdate.update(UpdateClient, "https://raw.githubusercontent.com/anaireorg/anaire-devices/main/Anaire.PiCO2/anaire.PiCO2/anaire.PiCO2.ino.esp32.bin");
-
-  switch (ret)
-  {
-
-  case HTTP_UPDATE_FAILED:
-    Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
-    tft.fillScreen(TFT_ORANGE);
-    tft.drawString("ACTUALIZACION FALLIDA", tft.width() / 2, tft.height() / 2);
-    delay(1000);
-    break;
-
-  case HTTP_UPDATE_NO_UPDATES:
-    Serial.println("HTTP_UPDATE_NO_UPDATES");
-    break;
-
-  case HTTP_UPDATE_OK:
-    Serial.println("HTTP_UPDATE_OK");
-    tft.fillScreen(TFT_ORANGE);
-    tft.drawString("ACTUALIZACION COMPLETA", tft.width() / 2, tft.height() / 2);
-    delay(1000);
-    break;
   }
 }
 
