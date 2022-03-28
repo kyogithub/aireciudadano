@@ -321,6 +321,8 @@ void loop()
       PM25f = CO2ppm_accumulated / CO2ppm_samples;
       PM25int = round(PM25f);
       Serial.println(PM25int);
+      Serial.print("PM25: ");
+      Serial.print(PM25int);
       ReadHyT();
 #if BLUETOOTH
       Write_Bluetooth();
@@ -1167,7 +1169,7 @@ void ReadHyT()
     if (!isnan(humidity))
     { // check if 'is not a number'
       failh = 0;
-      Serial.print("SHT31 Humi % = ");
+      Serial.print("   Hum % = ");
       Serial.print(humidity);
       humi = round(humidity);
     }
@@ -1185,7 +1187,7 @@ void ReadHyT()
 
     if (!isnan(temperature))
     { // check if 'is not a number'
-      Serial.print("   Temp *C = ");
+      Serial.print("   Tem *C = ");
       Serial.println(temperature);
       temp = round(temperature);
     }
@@ -1201,7 +1203,7 @@ void ReadHyT()
     if (!isnan(humidity))
     {
       failh = 0;
-      Serial.print("AM2320 Humi % = ");
+      Serial.print("   Hum % = ");
       Serial.print(humidity);
       humi = round(humidity);
     }
@@ -1219,7 +1221,7 @@ void ReadHyT()
 
     if (!isnan(temperature))
     {
-      Serial.print("   Temp *C = ");
+      Serial.print("   Tem *C = ");
       Serial.println(temperature);
       temp = round(temperature);
     }
@@ -1648,7 +1650,7 @@ void Write_Bluetooth()
   gadgetBle.writeCO2(round(PM25int));
   gadgetBle.writeTemperature(temp);
   gadgetBle.writeHumidity(humi);
-  Serial.println("Bluetooth frame sent: PM25, humidity and temperature");
+  Serial.println("Bluetooth frame: PM25, humidity and temperature");
   gadgetBle.commit();
 }
 #endif
