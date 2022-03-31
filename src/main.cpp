@@ -157,7 +157,8 @@ bool AM2320flag = false;
 // Bluetooth in TTGO T-Display
 #if BLUETOOTH
 #include "Sensirion_GadgetBle_Lib.h" // to connect to Sensirion MyAmbience Android App available on Google Play
-GadgetBle gadgetBle = GadgetBle(GadgetBle::DataType::T_RH_CO2_ALT);
+//GadgetBle gadgetBle = GadgetBle(GadgetBle::DataType::T_RH_CO2_ALT);
+GadgetBle gadgetBle = GadgetBle(GadgetBle::DataType::T_RH_VOC_PM25_V2);
 bool bluetooth_active = false;
 #endif
 
@@ -1637,7 +1638,7 @@ void Suspend_Device()
 #if BLUETOOTH
 void Write_Bluetooth()
 { // Write measurements to bluetooth
-  gadgetBle.writeCO2(round(PM25int));
+  gadgetBle.writePM2p5(PM25int);
   gadgetBle.writeTemperature(temp);
   gadgetBle.writeHumidity(humi);
   Serial.println("Bluetooth frame: PM25, humidity and temperature");
