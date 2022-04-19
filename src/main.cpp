@@ -122,7 +122,7 @@ void setup() {
         delay(100);
     }
 
-    Wire.begin();
+    Wire.begin(21, 22);
 
     sen5x.begin(Wire);
 
@@ -133,6 +133,7 @@ void setup() {
         Serial.print("Error trying to execute deviceReset(): ");
         errorToString(error, errorMessage, 256);
         Serial.println(errorMessage);
+        ESP.restart();
     }
 
 // Print SEN55 module information if i2c buffers are large enough
@@ -177,6 +178,7 @@ void setup() {
         Serial.print("Error trying to execute startMeasurement(): ");
         errorToString(error, errorMessage, 256);
         Serial.println(errorMessage);
+        ESP.restart();
     }
 }
 
@@ -205,6 +207,17 @@ void loop() {
         Serial.print("Error trying to execute readMeasuredValues(): ");
         errorToString(error, errorMessage, 256);
         Serial.println(errorMessage);
+        delay(10);
+        Wire.begin(18, 19);;
+        delay(10);
+        sen5x.begin(Wire);
+        delay(10);
+        Wire.begin(21, 22);;
+        delay(10);
+        sen5x.begin(Wire);
+        Serial.println("Reinit I2C");
+        delay(10);
+
     } else {
         Serial.print("MassConcentrationPm1p0:");
         Serial.print(massConcentrationPm1p0);
