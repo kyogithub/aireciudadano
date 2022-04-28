@@ -10,7 +10,7 @@
 #define BLUETOOTH true // Set to true in case bluetooth is desired
 
 // device id, automatically filled by concatenating the last three fields of the wifi mac address, removing the ":" in betweeen, in HEX format. Example: ChipId (HEX) = 85e646, ChipId (DEC) = 8775238, macaddress = E0:98:06:85:E6:46
-String sw_version = "v0.3";
+String sw_version = "v0.5";
 String anaire_device_id;
 
 // Init to default values; if they have been chaged they will be readed later, on initialization
@@ -100,8 +100,8 @@ unsigned long errors_loop_start;           // holds a timestamp for each error l
 #define FF95 &ArchivoNarrow_Regular50pt7b
 TFT_eSPI tft = TFT_eSPI(135, 240); // Invoke library, pins defined in User_Setup.h
 
-// Customized Anaire splash screen
-#include "anaire_ttgo_splash.h"
+// Customized AireCiudadano splash screen
+#include "Icono_AireCiudadano.h"
 
 // Buttons: Top and bottom considered when USB connector is positioned on the right of the board
 #include "Button2.h"
@@ -217,7 +217,7 @@ void setup()
 
   // print info
   Serial.println();
-  Serial.println("### INIT ANAIRE PiCO2 DEVICE ###########################################");
+  Serial.println("### INIT Aire Ciudadano DEVICE ###########################################");
 
   // Initialize TTGO Display and show Anaire splash screen
   Display_Init();
@@ -264,15 +264,15 @@ void setup()
   measurements_loop_start = millis();
   errors_loop_start = millis();
 
-  Serial.println("### ANAIRE PiCO2 DEVICE SETUP FINISHED ###\n");
+  Serial.println("### Aire Ciudadano DEVICE SETUP FINISHED ###\n");
   tft.fillScreen(TFT_BLUE);
   tft.setTextColor(TFT_WHITE, TFT_BLUE);
   tft.setTextDatum(6); // bottom left
   tft.setTextSize(1);
   tft.setFreeFont(FF90);
   tft.setTextDatum(MC_DATUM);
-  tft.drawString("ANAIRE PiCO2", tft.width() / 2, tft.height() / 2);
-  delay(1000);
+  tft.drawString("Medidor AireCiudadano BT", tft.width() / 2, tft.height() / 2);
+  delay(5000);
 
   // Update display with new values
   Update_Display();
@@ -1382,8 +1382,9 @@ void Display_Init()
 }
 
 void Display_Splash_Screen()
-{ // Display Anaire splash screen
-  tft.pushImage(0, 0, 240, 135, anaire_ttgo_splash);
+{ // Display AireCiudadano splash screen
+  tft.setSwapBytes(true);
+  tft.pushImage(0, 0, 240, 135, Icono_AireCiudadano);
 }
 
 void Update_Display()
