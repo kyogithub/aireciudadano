@@ -1262,6 +1262,37 @@ void Receive_Message_Cloud_App_MQTT(char *topic, byte *payload, unsigned int len
 void Setup_Sensor()
 { // Identify and initialize PM25, temperature and humidity sensor
 
+// Test PM2.5 SPS30
+  if (SEN5Xflag == false)
+  {
+    Serial.println("Test Sensirion SPS30 sensor");
+    // Wire.begin(Sensor_SDA_pin, Sensor_SCL_pin);
+
+    sps30.EnableDebugging(DEBUG);
+    // Begin communication channel
+    SP30_COMMS.begin();
+    if (sps30.begin(&SP30_COMMS) == false)
+    {
+      Errorloop((char *)"Could not set I2C communication channel.", 0);
+    }
+    // check for SPS30 connection
+    if (!sps30.probe())
+      Errorloop((char *)"could not probe / connect with SPS30.", 0);
+    else
+    {
+      Serial.println("Detected SPS30.");
+      pm25_sensor = scd30_sensor;
+      SPS30flag = true;
+      // read device info
+      GetDeviceInfo();
+    }
+    // start measurement
+    if (!sps30.start())
+      Serial.println("Measurement started");
+    else
+      Errorloop((char *)"Could NOT start measurement", 0);
+
+
   //////////////////////////////////////////////////////////////////////////////////////////////
   // Test PM2.5 SEN5X
 
@@ -1303,37 +1334,7 @@ void Setup_Sensor()
 
   ///////////////////////////////////////////////////////////////////////////////////////////
 
-  // Test PM2.5 SPS30
-  if (SEN5Xflag == false)
-  {
-    Serial.println("Test Sensirion SPS30 sensor");
-    // Wire.begin(Sensor_SDA_pin, Sensor_SCL_pin);
-
-    sps30.EnableDebugging(DEBUG);
-    // Begin communication channel
-    SP30_COMMS.begin();
-    if (sps30.begin(&SP30_COMMS) == false)
-    {
-      Errorloop((char *)"Could not set I2C communication channel.", 0);
-    }
-    // check for SPS30 connection
-    if (!sps30.probe())
-      Errorloop((char *)"could not probe / connect with SPS30.", 0);
-    else
-    {
-      Serial.println("Detected SPS30.");
-      pm25_sensor = scd30_sensor;
-      SPS30flag = true;
-      // read device info
-      GetDeviceInfo();
-    }
-    // start measurement
-    if (!sps30.start())
-      Serial.println("Measurement started");
-    else
-      Errorloop((char *)"Could NOT start measurement", 0);
-
-    // PMS7003 PMSA003
+  // PMS7003 PMSA003
 
     Serial.println("Test Plantower Sensor");
     Serial1.begin(PMS::BAUD_RATE, SERIAL_8N1, PMS_TX, PMS_RX);
