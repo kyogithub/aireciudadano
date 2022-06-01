@@ -26,6 +26,7 @@
 //          OK: Revision de Teclas para dormir en el Splash Screen!!!!!!!!!!!!!!!!!
 //          OK: Revisión de Teclas para despertar, ojala fuera mas de 1 segundo por posibles ruidos de tecla
 //          OK seguir revisando: Revisar la funcion de la APP de sample time a ver como se maneja desde el micro, investigar eso bien
+//          OK: Version de firmware incluida en el valor IDn que se envia por la trama mqtt
 //
 // MODIFICACIONES EXTERNAS:
 // Modificado WifiManager.cpp para que cuando ingrese al Config del portal cautivo pase a 180 segundos y no 10:
@@ -38,7 +39,7 @@
 
 ////////////////////////////////
 // Obligatorio para version Bluetooth:
-#define Bluetooth false // Set to true in case bluetooth is desired
+#define Bluetooth true // Set to true in case bluetooth is desired
 
 // Escoger modelo de pantalla (pasar de false a true) o si no hay escoger ninguna (todas false):
 #define Tdisplaydisp false
@@ -58,6 +59,10 @@
                             // Nombre estación: char aireciudadano_device_name[36] = "xxxxxxxxxxxxxx";
 
 // Fin definiciones opcionales Wifi
+
+// Definiciones para boards M5Stack
+#define M5AtomBoard true        // M5Atom usado
+///////////////////////////////////
 
 bool SPS30sen = false;      // Sensor Sensirion SPS30
 bool SEN5Xsen = false;      // Sensor Sensirion SEN5X
@@ -119,6 +124,11 @@ char aireciudadano_device_nameTemp[30] = {0};
 // OFF BROWNOUT/////////////////////
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
+#endif
+
+#if M5AtomBoard
+#include <M5Atom.h>
+#include <FastLED.h>
 #endif
 
 // to store data on nvs partition
@@ -340,8 +350,15 @@ bool Calibrating = false;
 void setup()
 {
 
+#if M5AtomBoard
+  M5.begin(true, true, false); //Init Atom-Matrix(Initialize serial port, I2C, LED)
+  Wire.begin(Sensor_SDA_pin, Sensor_SCL_pin);
+  delay(10);  //delay10ms
+#else
   // Initialize serial port for serial monitor in Arduino IDE
   Serial.begin(115200);
+#endif
+
   while (!Serial)
   {
     delay(500); // wait 0.5 seconds for connection
