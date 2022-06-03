@@ -39,7 +39,7 @@
 
 ////////////////////////////////
 // Obligatorio para version Bluetooth:
-#define Bluetooth true // Set to true in case bluetooth is desired
+#define Bluetooth false // Set to true in case bluetooth is desired
 
 // Escoger modelo de pantalla (pasar de false a true) o si no hay escoger ninguna (todas false):
 #define Tdisplaydisp false
@@ -61,7 +61,7 @@
 // Fin definiciones opcionales Wifi
 
 // Definiciones para boards M5Stack
-#define M5AtomBoard true        // M5Atom usado
+#define M5AtomBoard false        // M5Atom usado
 ///////////////////////////////////
 
 bool SPS30sen = false;      // Sensor Sensirion SPS30
@@ -128,7 +128,6 @@ char aireciudadano_device_nameTemp[30] = {0};
 
 #if M5AtomBoard
 #include <M5Atom.h>
-#include <FastLED.h>
 #endif
 
 // to store data on nvs partition
@@ -350,19 +349,20 @@ bool Calibrating = false;
 void setup()
 {
 
+    Serial.begin(115200);
+    delay(200);
+    Serial.println("Sensor test setup");
+
 #if M5AtomBoard
   M5.begin(true, true, false); //Init Atom-Matrix(Initialize serial port, I2C, LED)
-  Wire.begin(Sensor_SDA_pin, Sensor_SCL_pin);
+//  Wire.begin(Sensor_SDA_pin, Sensor_SCL_pin);
   delay(10);  //delay10ms
-#else
-  // Initialize serial port for serial monitor in Arduino IDE
-  Serial.begin(115200);
 #endif
 
-  while (!Serial)
-  {
-    delay(500); // wait 0.5 seconds for connection
-  }
+//  while (!Serial)
+//  {
+//    delay(500); // wait 0.5 seconds for connection
+//  }
   Serial.setDebugOutput(true);
 
   Serial.println("CPU0 reset reason:");
