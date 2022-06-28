@@ -1395,10 +1395,9 @@ void Start_Captive_Portal()
   wifi_server.stop();
 
   wifiManager.setDebugOutput(true);
-  wifiManager.disconnect();
-
   WiFi.mode(WIFI_AP); // explicitly set mode, esp defaults to STA+AP
-
+  wifiManager.disconnect();
+  
   // Captive portal parameters
 
   WiFiManagerParameter custom_id_name("CustomName", "Set Station Name (29 char max):", eepromConfig.aireciudadano_device_name, 29);
@@ -1754,11 +1753,7 @@ void Send_Message_Cloud_App_MQTT()
   ///// END DEBUG Samples
   ReadHyT();
 
-#if !ESP8266board
   RSSI = WiFi.RSSI();
-#else
-  RSSI = WiFi.RSSI();
-#endif
 
   Serial.print("Signal strength (RSSI):");
   Serial.print(RSSI);
